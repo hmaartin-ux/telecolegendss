@@ -1,0 +1,26 @@
+{
+  "name": "Telecom Legends",
+  "short_name": "Telecom Legends",
+  "description": "Cartas, expediciones roguelike y estudio de telecomunicaciones.",
+  "lang": "es",
+  "start_url": "./Telecom_Legends_v7.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070a14",
+  "theme_color": "#0a0e1a",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./telecom-legends-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
