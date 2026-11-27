@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'telecom-legends-shell-v19';
+const CACHE_NAME = 'telecom-legends-shell-v20';
 const APP_FILES = [
   './index.html',
   './styles.css',

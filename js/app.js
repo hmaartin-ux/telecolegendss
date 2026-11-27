@@ -5616,7 +5616,9 @@ if(typeof alertaAnswer==='function'){const TL_v19_alertaAnswer=alertaAnswer;aler
 
 /* Título equipado en la cabecera */
 const TL_v19_renderTop=renderTop;
-renderTop=function(){TL_v19_renderTop();try{const t=$('#top');if(!t)return;if(NC_TOPR.has(route)||(route==='play'&&M&&M.mode==='nc')){const cur=curTitle();if(cur&&cur.id!=='noc'){let el=t.querySelector('.ttl-top');if(!el){el=document.createElement('span');el.className='ttl-top pill';el.style.cssText='background:#1a1400;border:1px solid #a16207;color:#fde047;font-weight:800';t.insertBefore(el,t.firstChild)}el.textContent=cur.n}}}catch(e){}};
+renderTop=function(){TL_v19_renderTop();try{const t=$('#top');if(!t)return;const _nt=(typeof NC_TOPR!=='undefined'&&NC_TOPR&&typeof NC_TOPR.has==='function')?NC_TOPR:new Set();if(_nt.has(route)||(route==='play'&&M&&M.mode==='nc')){const cur=curTitle();if(cur&&cur.id!=='noc'){let el=t.querySelector('.ttl-top');if(!el){el=document.createElement('span');el.className='ttl-top pill';el.style.cssText='background:#1a1400;border:1px solid #a16207;color:#fde047;font-weight:800';t.insertBefore(el,t.firstChild)}el.textContent=cur.n}}}catch(e){}};
 
 /* ====== arranque ====== */
-load();init();render();
+load();init();
+try{render()}catch(e){console.error('render failed',e)}
+try{const n=document.getElementById('nav');if(n){n.style.display='flex';n.style.opacity='1';n.style.visibility='visible'}}catch(e){}

@@ -884,3 +884,6 @@ body{height:100dvh;max-height:100dvh;overflow:hidden}
 .alerta-sub{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .alerta-sub .chip{display:inline-flex;align-items:center;gap:4px}
 .alerta-sub .chip small{color:#fecaca;font-weight:700}
+
+#nav{display:flex !important;opacity:1 !important;visibility:visible !important}
+#view{min-height:40vh}
