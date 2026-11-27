@@ -752,3 +752,30 @@ body.mode-command .bg{background:radial-gradient(900px 500px at 15% -10%,#0d3b52
 @media(prefers-reduced-motion:reduce){.ncscan,.ncn.av circle,.nce.nx,.ncg.crit,.ncticket>div,.ncroute line.pk{animation:none}}
 .nccop{display:flex;gap:8px;align-items:flex-start;margin-top:8px;padding:6px 9px;border-radius:10px;background:#071a12;border:1px solid #15803d66;color:#bbf7d0;font-size:12.5px;line-height:1.35}.nccop i{font-style:normal}.nccop.ncflash{animation:nccop .6s}@keyframes nccop{0%{background:#14532d;box-shadow:0 0 14px rgba(34,197,94,.5)}}
 body.mode-command #petmini .pbub{max-width:200px}
+
+@media(max-width:430px){
+ #view{padding:12px 10px 20px}
+ .nchero{padding:14px 10px}
+ .ncres3{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .ncres3 span{min-height:68px;padding:8px}
+ .ncres3 small{font-size:10px}
+ .ncrack{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .ncsecs{grid-template-columns:minmax(0,1fr)}
+ .ncsec{display:grid;grid-template-columns:36px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:9px;row-gap:2px;min-height:72px;padding:10px 12px}
+ .ncsec .nce{grid-column:1;grid-row:1 / span 2;font-size:26px}
+ .ncsec>b{grid-column:2;grid-row:1;justify-self:start;min-width:0;font-size:14px}
+ .ncsec>small:nth-of-type(1){grid-column:2;grid-row:2;justify-self:start;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+ .ncsec .ncstars{grid-column:3;grid-row:1;text-align:right;font-size:12px}
+ .ncsec>small:nth-of-type(2){grid-column:3;grid-row:2;text-align:right;white-space:nowrap;font-size:10px}
+ .ncdaily{gap:9px;padding:10px 12px}
+ .ncdaily>span{font-size:26px}
+}
+
+@media(max-width:360px){
+ .ncres3{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ncrack{grid-template-columns:minmax(0,1fr)}
+ .ncslot:not(.empty){display:grid;grid-template-columns:36px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;min-height:62px;padding:8px 10px;text-align:left}
+ .ncslot:not(.empty)>span{grid-column:1;grid-row:1 / span 2;font-size:25px}
+ .ncslot:not(.empty)>b{grid-column:2;grid-row:1;font-size:13px}
+ .ncslot:not(.empty)>small{grid-column:2;grid-row:2;font-size:11px}
+}
