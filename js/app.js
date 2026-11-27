@@ -5620,5 +5620,4 @@ renderTop=function(){TL_v19_renderTop();try{const t=$('#top');if(!t)return;const
 
 /* ====== arranque ====== */
 load();init();
-try{render()}catch(e){console.error('render failed',e)}
-try{const n=document.getElementById('nav');if(n){n.style.display='flex';n.style.opacity='1';n.style.visibility='visible'}}catch(e){}
+try{render()}catch(e){console.error('render failed',e);try{const v=document.getElementById('view');if(v)v.innerHTML='<div class=err>'+String(e&&e.message?e.message:e)+'</div>'}catch(_){};try{renderNav()}catch(_){}}
