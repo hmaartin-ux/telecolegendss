@@ -847,3 +847,40 @@ body.mode-command #petmini .pbub{max-width:200px}
 .cap>button:active{transform:scale(.97)}
 .cap>button b{display:block;font-size:15px;margin-bottom:2px;letter-spacing:.4px}
 .cap>button small{font-size:11.5px;color:var(--mut);line-height:1.3}
+
+/* =====================================================================
+   v19 · Edición Maestra · Barra inferior fija en el borde real del iPhone,
+   pantalla completa 100dvh y legibilidad de fórmulas/explicaciones.
+   ===================================================================== */
+html,body{height:100dvh;max-height:100dvh;overflow:hidden}
+body{height:100dvh;max-height:100dvh;overflow:hidden}
+#app{height:100dvh;max-height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding:0;margin:0}
+#top{flex:0 0 auto}
+#view{flex:1 1 0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+#nav{position:fixed;left:0;right:0;bottom:0;width:100%;max-width:none;margin:0;z-index:90;display:flex;justify-content:center;background:rgba(13,18,34,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--ln);padding:0;padding-bottom:max(8px,env(safe-area-inset-bottom));touch-action:manipulation}
+#nav .in{display:flex;max-width:560px;width:100%}
+#nav button{flex:1;min-height:52px;padding:8px 0}
+.sw-update{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));z-index:95}
+/* Botones héroes de Sector Desplegado y Briefing: contraste alto y aire sobre #nav */
+.ncho,.btn48.ncho{background:linear-gradient(135deg,#0ea5e9,#7c3aed,#ec4899);color:#fff;min-height:56px;width:100%;touch-action:manipulation;box-shadow:0 0 0 2px rgba(236,72,153,.5),0 8px 24px rgba(139,92,246,.45)}
+.ncbrief .btn.green.ncdep{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;min-height:56px;width:100%;margin-bottom:calc(16px + env(safe-area-inset-bottom));touch-action:manipulation}
+/* Explicación/fórmula siempre legible y con scroll horizontal en KaTeX */
+.sol,.okans,.ncf,.qtext,.opt,.alerta-q{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.sol{font-size:14.5px;line-height:1.65;padding:14px}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:2px 0}
+@media(max-width:430px){.sol{padding:12px;font-size:14px}.qtext{padding:14px}.katex{font-size:1.02em}}
+@media(max-width:430px){#view{padding:12px 10px calc(84px + env(safe-area-inset-bottom))}}
+
+/* v19 · Sinergias de Rack, insignias/títulos y selector de Alerta Roja */
+.synergy{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+.synergy .syn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;background:#06192b;border:1px solid #38bdf8;color:#bae6fd}
+.synergy .syn.on{background:linear-gradient(135deg,#0e7490,#7c3aed);border-color:#a78bfa;color:#fff;box-shadow:0 0 12px rgba(124,92,255,.5)}
+.hmtitle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
+.hmtitle .ttl{font-family:"Russo One",sans-serif;font-size:13px;letter-spacing:.4px;color:#fde047;background:#1a1400;border:1px solid #a16207;border-radius:999px;padding:4px 11px;cursor:pointer;touch-action:manipulation}
+.badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:8px 0}
+.badge{position:relative;padding:10px;border-radius:12px;background:#0b1626;border:1px solid #1f4a66;text-align:center;opacity:.55}
+.badge.on{opacity:1;border-color:#a16207;background:linear-gradient(160deg,#2a2205,#0b1626);box-shadow:0 0 14px rgba(251,191,36,.25)}
+.badge span{font-size:24px}.badge b{display:block;font-size:12.5px;margin-top:2px}.badge small{font-size:10.5px;color:#7dd3fc}
+.alerta-sub{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.alerta-sub .chip{display:inline-flex;align-items:center;gap:4px}
+.alerta-sub .chip small{color:#fecaca;font-weight:700}
