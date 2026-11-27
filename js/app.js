@@ -4818,6 +4818,8 @@ const NC_LAYERS=[
  {k:'int',n:'Interferencia',e:'📶',q:5,goal:'Restaura la SNR: termina con SNR ≥ 20 dB (+4 dB por acierto, −5 dB por fallo).',bonus:30},
  {k:'ovl',n:'Sobrecarga',e:'🌊',q:5,goal:'No desbordes el búfer: cada fallo encola un paquete (capacidad 2). Reloj al 90 %.',bonus:32},
  {k:'aud',n:'Auditoría',e:'🧾',q:6,goal:'Audita el sistema: acierta 4 de 6. Tus incidencias abiertas de este sector entran primero.',bonus:36},
+ {k:'foco',n:'Foco de asignatura',e:'🎯',q:3,goal:'Nodo focal por asignatura: acierta al menos 2 de 3 preguntas del tema más flojo del sector.',bonus:25},
+ {k:'sig',n:'Señal de prueba',e:'📡',q:2,goal:'Señal de prueba: acierta las 2 preguntas de la asignatura. Premio rápido.',bonus:18},
  {k:'boss',n:'Apagón crítico',e:'☢️',q:12,goal:'Derriba al jefe de sector antes de que tu integridad llegue a 0.',bonus:130}
 ];
 const NC_BRANCH={mix:{n:'Mixta',e:'🔀',d:'Teoría y cálculo',m:1},safe:{n:'Teoría',e:'📘',d:'Ruta segura: conceptos, sin cálculo',m:1},risk:{n:'Cálculo',e:'🧮',d:'Ruta arriesgada: cálculo puro, más daño · cofre de fragmentos',m:1.6}};
@@ -4872,7 +4874,7 @@ function ncSay(text,ms=3400,mood=2){if(route==='play'&&M&&M.nc){M.nc.cop=text;co
 
 /* ---------- campaña: mapa de sector ---------- */
 function ncNewRun(a){const N=S.nc,sec=N.sec[a],t=sec.tier,mk=()=>pk(Object.keys(NC_MODS));
- const layers=NC_LAYERS.map((L,i)=>{if(i===0)return [{id:'0',b:'mix',mod:'calm'}];if(L.k==='boss')return [{id:'4',b:'mix',mod:null}];return [{id:i+'s',b:'safe',mod:mk()},{id:i+'r',b:'risk',mod:mk()}]});
+ const layers=NC_LAYERS.map((L,i)=>{if(i===0)return [{id:'0',b:'mix',mod:'calm'}];if(L.k==='boss')return [{id:String(i),b:'mix',mod:null}];return [{id:i+'s',b:'safe',mod:mk()},{id:i+'r',b:'risk',mod:mk()}]});
  N.run={a,tier:t,layer:0,path:[],res:{},layers,integ:100+10*ncMod('gen'),max:100+10*ncMod('gen'),cr:0,fr:0,started:Date.now()};save();return N.run}
 function ncNode(run,id){for(const L of run.layers)for(const n of L)if(n.id===id)return n;return null}
 function ncAvail(run){return run.layer<run.layers.length?run.layers[run.layer].map(n=>n.id):[]}
@@ -4915,7 +4917,8 @@ function ncDifs(t,br){const base=[[1,2],[1,2,3],[2,3],[2,3,4],[3,4]][Math.min(4,
 function ncLaunch(id,rep){const N=S.nc;let run=N.run,n,L,a,tier;
  if(rep){a=rep;tier=N.sec[a].tier;L={k:'rep',n:'Reparación',e:'🎫',q:Math.min(6,ncOpenInc(a).length),goal:'Cierra incidencias abiertas: cada acierto paga ×'+(ncMod('rec')?4:3)+'.',bonus:10};n={id:'rep',b:'mix',mod:'calm'}}
  else{if(!run)return;n=ncNode(run,id);L=NC_LAYERS[run.layer];a=run.a;tier=run.tier}
- const mod=n.mod?NC_MODS[n.mod]:null,q=L.q+(n.mod==='peak'?1:0),difs=ncDifs(tier,n.b);
+  if(!n.focus)n.focus=ncWeakTk(a);
+  const mod=n.mod?NC_MODS[n.mod]:null,q=L.q+(n.mod==='peak'?1:0),difs=ncDifs(tier,n.b);
  const qs=rep?ncOpenInc(a).map(([qid])=>S.qs.find(x=>x.id===qid)).filter(Boolean).slice(0,6):ncPickQs(a,n,L.k,q,difs,n.focus,L.k==='aud'?2:0);
  if(!qs.length){toast('No hay preguntas para esta misión');return}
  const b=deckBonus(a,S.deck,'nc');b.icons=[];b.tb=0;
@@ -4928,8 +4931,8 @@ function ncLaunch(id,rep){const N=S.nc;let run=N.run,n,L,a,tier;
 /* ---------- HUD de misión ---------- */
 function ncHUD(){const N=M.nc,run=S.nc.run,L=NC_LAYERS.find(x=>x.k===N.kind)||{n:'Reparación',e:'🎫'},it=M.qs[M.i],q=it.q;
  const integ=N.rep?null:Math.max(0,run?run.integ:0),imax=run?run.max:100,lat=N.lat.length?N.lat.reduce((s,x)=>s+x,0)/N.lat.length:0,snr=N.kind==='int'?N.snr:Math.max(0,Math.round(12+3*M.combo-2*M.wrong));
- let obj='';const need={cal:3,aud:4}[N.kind];
- if(N.kind==='cal'||N.kind==='aud')obj=`<div class="ncobj">🎯 Aciertos <b>${M.correct}</b>/${need} necesarios · pregunta ${M.i+1}/${M.qs.length}</div>`;
+ let obj='';const need={cal:3,aud:4,foco:2,sig:2}[N.kind];
+ if(N.kind==='cal'||N.kind==='aud'||N.kind==='foco'||N.kind==='sig')obj=`<div class="ncobj">🎯 Aciertos <b>${M.correct}</b>/${need} necesarios · pregunta ${M.i+1}/${M.qs.length}</div>`;
  else if(N.kind==='int')obj=`<div class="ncobj ${N.snr>=20?'ok':''}">🎯 SNR <b>${N.snr} dB</b> · objetivo ≥ 20 dB · ${M.i+1}/${M.qs.length}</div>`;
  else if(N.kind==='ovl')obj=`<div class="ncobj ${N.buf>=2?'warn':''}">🎯 Búfer ${'▮'.repeat(N.buf)}${'▯'.repeat(Math.max(0,2-N.buf))} <b>${N.buf}/2</b> · ${M.i+1}/${M.qs.length}</div>`;
  else if(N.kind==='rep')obj=`<div class="ncobj">🎫 Tickets cerrados <b>${N.incClosed}</b> · ${M.i+1}/${M.qs.length}</div>`;
@@ -5008,8 +5011,8 @@ quitMatch=(old=>function(){if(!M||M.mode!=='nc')return old();modal(`<h3>¿Aborta
 function ncAbort(){if(!M||!M.nc)return;M.nc.abort=true;M.over=true;M.ended=true;stopTimer();closeCalc();ncFinish()}
 
 /* ---------- fin de misión y recompensas ---------- */
-function ncFinish(){const N=M.nc,run=S.nc.run,L=NC_LAYERS.find(x=>x.k===N.kind)||{n:'Reparación',e:'🎫',bonus:10},tm=ncTierMult(N.tier),mod=N.mod?NC_MODS[N.mod]:{cr:1};
- const nq=M.qs.length,ok={cal:M.correct>=3,int:N.snr>=20,ovl:!N.fail,aud:M.correct>=4,boss:!!N.win,rep:N.incClosed>0}[N.kind]&&!N.collapse&&!N.abort;
+ function ncFinish(){const N=M.nc,run=S.nc.run,L=NC_LAYERS.find(x=>x.k===N.kind)||{n:'Reparación',e:'🎫',bonus:10},tm=ncTierMult(N.tier),mod=N.mod?NC_MODS[N.mod]:{cr:1};
+  const nq=M.qs.length,ok={cal:M.correct>=3,int:N.snr>=20,ovl:!N.fail,foco:M.correct>=2,sig:M.correct===nq,aud:M.correct>=4,boss:!!N.win,rep:N.incClosed>0}[N.kind]&&!N.collapse&&!N.abort;
  let cr=N.crAcc,fr=0,card=null;const lines=[];
  if(ok){const bonus=Math.round(L.bonus*tm*NC_BRANCH[N.b].m*(mod.cr||1)*(N.a===ncDaily()?1.25:1));cr+=bonus;lines.push(`Bonificación de misión: +${bonus} 🔬`)}
  if(ok&&N.b==='risk'){fr+=3+N.tier+(mod.fr||0);if(Math.random()<.25){const pool=CARDS.filter(c=>c.r==='O'&&(c.a===N.a||c.a==='ALL')&&!S.cards[c.id]);card=pool.length?pk(pool):null;if(card)S.cards[card.id]={n:1,l:1,xp:0}}}
@@ -5045,7 +5048,9 @@ function ncTicket(q){const d=document.createElement('div');d.className='ncticket
 /* ---------- mini-retos de laboratorio ---------- */
 const NC_LABS={
  osc:{n:'Sintonizador de fase',e:'📟',d:'Desliza hasta alinear tu onda (magenta) con la de referencia (cian): interferencia constructiva ≥ 97 %.',mount:ncLabOsc},
- route:{n:'Enrutamiento de paquetes',e:'🛰️',d:'Toca los nodos de menor a mayor latencia antes de que se sature el búfer.',mount:ncLabRoute}
+ route:{n:'Enrutamiento de paquetes',e:'🛰️',d:'Toca los nodos de menor a mayor latencia antes de que se sature el búfer.',mount:ncLabRoute},
+ crc:{n:'FCS de trama',e:'🔢',d:'Toca bits para cambiar el XOR de la trama al valor objetivo.',mount:ncLabCrc},
+ parity:{n:'Paridad de filas y columnas',e:'🔲',d:'Invierte bits hasta que todas las filas y columnas tengan par paridad.',mount:ncLabParity}
 };
 function ncLab(done){const k=pk(Object.keys(NC_LABS)),Lb=NC_LABS[k],T=10+3*ncMod('osc');let left=T,over=false,tick=null,cleanup=null;
  modal(`<div class="nclab"><div class="nclab-h"><span>${Lb.e}</span><div><small>MINI-RETO DE LABORATORIO</small><b>${Lb.n}</b></div></div><div class="mut sm">${Lb.d}</div><div class="nclab-t"><i id="nclabt"></i></div><div id="nclab-area"></div><div id="nclab-msg" class="nclab-msg"></div></div>`,true);
@@ -5080,6 +5085,17 @@ function ncLabRoute(el,api){const W=320,H=210,pts=[[60,50],[160,30],[260,55],[95
  el.querySelectorAll('.ncrn').forEach(g=>{const hit=()=>{const i=+g.dataset.i;if(g.classList.contains('ok'))return;if(i===order[pos]){g.classList.add('ok');sfx('success',pos+1);vib(10);if(pos>0){const a=pts[order[pos-1]],b=pts[i];el.querySelector('#ncrp').insertAdjacentHTML('beforeend',`<line class="pk" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`)}pos++;if(pos>=pts.length)api.win()}else{g.classList.remove('bad');void g.getBoundingClientRect();g.classList.add('bad');buf+=22;setBuf();api.penalty(1.5);sfx('error');vib(40);if(buf>=100)api.lose()}};g.addEventListener('click',hit);g.addEventListener('keydown',e=>{if(e.key==='Enter')hit()})});
  const fill=setInterval(()=>{buf+=1.2;setBuf();if(buf>=100){clearInterval(fill);api.lose()}},150);
  return ()=>clearInterval(fill)}
+function ncLabCrc(el,api){const W=320,H=170;const n=8,data=shuffle([0,1]).slice(0,n);const fcs=data.reduce((x,b)=>x^b,0);let bits=data.slice(),flips=0,ok=false;
+el.innerHTML=`<div class="nccrc"><div class="nccrc-row">${data.map((b,i)=>`<div class="nccrc-bit" data-i="${i}">${b}</div>`).join('')}</div><div class="nccrc-row"><span>FCS (XOR):</span><div class="nccrc-bit nccrc-fcs">${fcs}</div></div><div class="nccrc-row"><small>Toca bits para cambiar el FCS a ${1-fcs}</small></div><div id="nccrc-msg" class="nccrc-msg"></div></div>`;
+const msg=el.querySelector('#nccrc-msg');const cur=()=>bits.reduce((x,b)=>x^b,0);
+el.querySelectorAll('.nccrc-bit[data-i]').forEach(g=>g.addEventListener('click',()=>{const i=+g.dataset.i;bits[i]^=1;flips++;g.textContent=bits[i];g.classList.toggle('nccrc-chg');if(cur()===1-fcs&&!ok){ok=true;api.win()}}));
+return ()=>{}}
+function ncLabParity(el,api){const R=3,C=3;const grid=shuffle([0,1]).slice(0,R*C);const rowP=grid.reduce((r,v,i)=>{const ri=Math.floor(i/C);r[ri]=(r[ri]||0)^v;return r},[]);const colP=grid.reduce((c,v,i)=>{const ci=i%C;c[ci]=(c[ci]||0)^v;return c},[]);let cells=grid.slice(),tries=0;
+el.innerHTML=`<div class="ncpar"><div class="ncpar-grid">${cells.map((v,i)=>`<div class="ncpar-cell" data-i="${i}">${v}</div>`).join('')}</div><div class="ncpar-leg"><div class="ncpar-rowp">${rowP.map(v=>`<div class="ncpar-bit">${v}</div>`).join('')}</div><div class="ncpar-colp">${colP.map(v=>`<div class="ncpar-bit">${v}</div>`).join('')}</div></div><div id="ncpar-msg" class="ncpar-msg"></div></div>`;
+const msg=el.querySelector('#ncpar-msg');const check=()=>{let bad=0;for(let r=0;r<R;r++){let x=0;for(let c=0;c<C;c++)x^=cells[r*C+c];if(x!==rowP[r])bad++}for(let c=0;c<C;c++){let x=0;for(let r=0;r<R;r++)x^=cells[r*C+c];if(x!==colP[c])bad++}return bad===0};
+el.querySelectorAll('.ncpar-cell').forEach(g=>g.addEventListener('click',()=>{const i=+g.dataset.i;cells[i]^=1;tries++;g.textContent=cells[i];g.classList.toggle('ncpar-chg');if(check()){api.win();if(msg)msg.innerHTML='<b class="g">✅ Paridad corregida</b>'}}));
+if(tries>=12)setTimeout(()=>api.lose(),100);
+return ()=>{}}
 
 /* ---------- Centro de Mando (pantalla principal) ---------- */
 const NC_ARCADE_HOME=VIEWS.home;
