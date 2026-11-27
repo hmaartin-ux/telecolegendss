@@ -777,5 +777,27 @@ body.mode-command #petmini .pbub{max-width:200px}
  .ncslot:not(.empty){display:grid;grid-template-columns:36px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;min-height:62px;padding:8px 10px;text-align:left}
  .ncslot:not(.empty)>span{grid-column:1;grid-row:1 / span 2;font-size:25px}
  .ncslot:not(.empty)>b{grid-column:2;grid-row:1;font-size:13px}
- .ncslot:not(.empty)>small{grid-column:2;grid-row:2;font-size:11px}
+  .ncslot:not(.empty)>small{grid-column:2;grid-row:2;font-size:11px}
 }
+
+/* ====== v16 · NOC profundo, crisis, reabastecimiento y mini-lab CIDR ====== */
+.ncnoc{display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:6px 10px;border-radius:10px;font-size:11px;font-weight:800;letter-spacing:.3px;background:#0c2438;border:1px solid #1e3a5f;color:#7dd3fc}
+.ncnoc>i{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:ncpulse 1.6s ease-in-out infinite}
+.ncnoc.ok{color:#34d399;border-color:#14532d;background:#052e1a}
+.ncnoc.warn{color:#fbbf24;border-color:#78350f;background:#2a1e05}
+.ncnoc.crit{color:#f87171;border-color:#7f1d1d;background:#2a0a0a}
+.ncnoc>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ncnoc .ncopt{font-size:10px;color:#fde047;background:#3a2e06;border:1px solid #a16207;border-radius:6px;padding:2px 6px;white-space:nowrap}
+@keyframes ncpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+.nccrisis .ncb-h,.ncbrief .ncb-h{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.nccrisis .ncb-h>span,.ncbrief .ncb-h>span{font-size:30px;line-height:1}
+.ncsub{padding:6px 2px}
+.ncsub-ip{font-size:24px;font-weight:900;color:#7dd3fc;text-align:center;letter-spacing:.5px;margin-bottom:2px}
+.ncsub-ip small{font-size:15px;color:#fbbf24}
+.ncsub-opts{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.ncsub-opts button{background:#0d1222;border:1px solid #1e3a5f;border-radius:10px;color:#e2e8f0;font-weight:800;font-size:16px;padding:12px;min-height:50px;touch-action:manipulation}
+.ncsub-opts button.ok{border-color:#22c55e;background:#052e1a;color:#86efac}
+.ncsub-opts button.bad{border-color:#ef4444;background:#2a0a0a;color:#fca5a5;animation:ncshake .3s}
+.ncsub-msg{text-align:center;font-size:13px;margin-top:6px}
+@keyframes ncshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media(max-width:600px){.ncnoc{font-size:10px}.ncsub-ip{font-size:21px}}

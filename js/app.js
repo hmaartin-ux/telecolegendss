@@ -5155,5 +5155,245 @@ ACH.push(
 
 petReact=(old=>function(good){if(M&&M.mode==='nc'&&route==='play')return;return old(good)})(petReact);
 
+/* =====================================================================
+   v16 · Expansión de banco (extraído del temario ya cargado en app.js:
+   NC_INTEL, GENS/GX y bancos previos) + Centro de Mando profundo.
+   ===================================================================== */
+const Q16=(asig,tema,dif,q,...rest)=>{const o4=Array.isArray(rest[3])?rest[3][0]:rest[3];const ops=[rest[0],rest[1],rest[2],o4];const sol=rest[4];const calc=rest[5]===true;return {asig,tema,dif,q,ops,ok:0,sol,calc}};
+const TL_V16_QUESTIONS=[
+/* ---------- RST1 · Redes 1 ---------- */
+Q16("RST1","T1 Fundamentos de transmisión",1,"Si el periodo de un bit es Tb, ¿cuál es el régimen binario R?","R = 1/Tb","R = Tb","R = Tb/2","R = 2·Tb".split(" | "),"R = 1/Tb es la definición del régimen binario (bits por segundo).",true),
+Q16("RST1","T1 Fundamentos de transmisión",2,"El tiempo de transmisión de una trama de L bits a R b/s es:","t_tx = L/R","t_tx = R/L","t_tx = L·R","t_tx = d/v".split(" | "),"t_tx = L/R; no depende de la distancia, solo del tamaño y de la velocidad.",true),
+Q16("RST1","T1 Fundamentos de transmisión",2,"El tiempo de propagación en un medio de longitud d y velocidad v es:","t_prop = d/v","t_prop = v/d","t_prop = L/R","t_prop = d·v".split(" | "),"t_prop = d/v; depende de la distancia y de la velocidad de propagación.",true),
+Q16("RST1","T1 Fundamentos de transmisión",2,"Una atenuación de A dB equivale a un factor de potencia:","10^(A/10)","10·A","A/10","e^A".split(" | "),"En decibelios de potencia, el factor es 10^(A/10).",true),
+Q16("RST1","T1 Fundamentos de transmisión",1,"¿Qué velocidad de propagación se usa para la fibra óptica en los ejercicios?","2·10^8 m/s","3·10^8 m/s","2·10^6 m/s","3·10^6 m/s".split(" | "),"En un medio guiado la luz va a unos 2·10^8 m/s; en el aire/vacío, 3·10^8 m/s."),
+Q16("RST1","T2 Introducción a las redes",2,"En conmutación de paquetes con store-and-forward, cada nodo:","vuelve a transmitir la trama entera","reenvía solo el primer bit","no almacena nada","usa un circuito dedicado".split(" | "),"Store-and-forward: el nodo recibe y almacena la trama completa antes de reenviarla, por eso t_tx se repite en cada enlace."),
+Q16("RST1","T2 Introducción a las redes",2,"¿Qué ventaja tiene la conmutación de paquetes frente a la de circuitos?","Aprovecha mejor el enlace con tráfico rafagoso","Garantiza ancho de banda fijo","Elimina la latencia","No necesita direccionamiento".split(" | "),"La conmutación de paquetes comparte el enlace y lo aprovecha mejor con tráfico en ráfagas; la de circuitos reserva un camino."),
+Q16("RST1","T3 Multiplexación",2,"En TDM, 8 bits que se repiten 8000 veces por segundo dan un canal de:","64 kbit/s","8 kbit/s","64 Mbit/s","800 bit/s".split(" | "),"R = bits/trama · f_trama = 8·8000 = 64000 bit/s = 64 kbit/s.",true),
+Q16("RST1","T3 Multiplexación",2,"¿Para qué sirve la banda de guarda en FDM?","Para separar canales y evitar solapamientos","Para aumentar el caudal","Para corregir errores","Para sincronizar tramas".split(" | "),"La guarda entre canales FDM evita que se solapen; reduce el número de canales útiles."),
+Q16("RST1","T3 Multiplexación",3,"El multiplexado estadístico se caracteriza por:","asignar ranuras solo a quien tiene datos","dar una ranura fija a cada usuario","funcionar solo en fibra","no usar tramas".split(" | "),"El TDM estadístico asigna ranuras bajo demanda, mejorando la eficiencia con tráfico variable."),
+Q16("RST1","T4 Acceso al medio",2,"¿Cuál es el throughput máximo del ALOHA puro?","1/(2e) ≈ 0,184","1/e ≈ 0,368","1","0,5".split(" | "),"ALOHA puro: S = G·e^(-2G), máximo 1/(2e) ≈ 0,184 en G=0,5.",true),
+Q16("RST1","T4 Acceso al medio",2,"¿Cuál es el throughput máximo del ALOHA ranurado?","1/e ≈ 0,368","1/(2e) ≈ 0,184","1","0,25".split(" | "),"ALOHA ranurado: S = G·e^(-G), máximo 1/e ≈ 0,368 en G=1.",true),
+Q16("RST1","T4 Acceso al medio",3,"La condición para detectar colisiones en CSMA/CD es:","t_tx ≥ 2·t_prop","t_tx ≤ t_prop","t_tx = t_prop/2","t_prop ≥ 2·t_tx".split(" | "),"Hay que seguir transmitiendo hasta que vuelva la colisión: t_tx ≥ 2·t_prop."),
+Q16("RST1","T4 Acceso al medio",2,"¿Por qué se usa CSMA/CA en redes inalámbricas en vez de CSMA/CD?","Porque no se puede detectar colisiones mientras se transmite","Porque el cable es muy largo","Porque no hay trama mínima","Porque el aire no propaga".split(" | "),"En radio no se oye la colisión al transmitir; por eso se usa prevención (CA) en lugar de detección (CD)."),
+Q16("RST1","T5 Dimensionado de redes",2,"La ley de Little relaciona:","N = λ·T","N = λ/T","N = T/λ","N = λ+T".split(" | "),"Little: N = λ·T (número medio = tasa de llegadas por tiempo medio en el sistema).",true),
+Q16("RST1","T5 Dimensionado de redes",2,"En una cola M/M/1, la ocupación del servidor es:","ρ = λ/μ","ρ = μ/λ","ρ = λ·μ","ρ = 1/(μ-λ)".split(" | "),"ρ = λ/μ; debe ser < 1 para que la cola sea estable.",true),
+Q16("RST1","T5 Dimensionado de redes",3,"El tiempo medio en el sistema de una M/M/1 es:","T = 1/(μ-λ)","T = 1/μ","T = ρ/(1-ρ)","T = λ/(μ-λ)".split(" | "),"T = 1/(μ-λ) incluye servicio y espera; 1/μ es solo el servicio.",true),
+Q16("RST1","T5 Dimensionado de redes",1,"La intensidad de tráfico I (en Erlangs) con tasa λ y duración media 1/μ es:","I = λ/μ","I = λ·μ","I = μ/λ","I = λ+μ".split(" | "),"I = λ·(1/μ) = λ/μ, medida en Erlangs.",true),
+Q16("RST1","T1 Fundamentos de transmisión",1,"La relación entre potencia de entrada y salida en dB (potencia) es:","A = 10·log10(P1/P2)","A = 20·log10(P1/P2)","A = ln(P1/P2)","A = P1/P2".split(" | "),"Para potencia, A(dB) = 10·log10(P1/P2); por eso el factor es 10^(A/10)."),
+Q16("RST1","T2 Introducción a las redes",1,"El retardo total de una transmisión incluye:","t_tx + t_prop","solo t_tx","solo t_prop","t_tx · t_prop".split(" | "),"El retardo extremo a extremo suma transmisión y propagación (más colas y procesado si los hay)."),
+/* ---------- RST2 · Redes 2 ---------- */
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",1,"El bit de paridad sirve para:","detectar un número impar de errores","corregir cualquier error","acelerar la trama","medir la latencia".split(" | "),"La paridad detecta un número impar de bits errados, pero no los corrige."),
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",2,"La distancia de Hamming entre dos palabras es:","el número de posiciones en que difieren","la suma de sus bits","el número de unos","la longitud de la palabra".split(" | "),"Es el número de bits distintos entre las dos palabras; con d se detectan d-1 y se corrigen ⌊(d-1)/2⌋ errores."),
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",3,"Con k bits de número de secuencia, la ventana máxima de Retroceder a N es:","2^k - 1","2^k","2^(k-1)","k".split(" | "),"GBN: N ≤ 2^k - 1 para no confundir retransmisiones.",true),
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",3,"En Repetición Selectiva con ventana N y M, se cumple:","N + M ≤ 2^k","N + M ≤ 2^(k-1)","N = 2^k","N·M = 2^k".split(" | "),"SR necesita N + M ≤ 2^k (números de secuencia suficientes para no solapar)."),
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",2,"El rendimiento de parada y espera sin errores es:","S = 1/(1+2a)","S = 1/(1+a)","S = a/(1+2a)","S = 1/a".split(" | "),"Con a = t_prop/t_tx, U = 1/(1+2a) por el retorno del ACK.",true),
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",1,"El ACK y el NAK sirven para:","confirmar recepción correcta o pedir retransmisión","medir la velocidad","elegir la ruta","cifrar la trama".split(" | "),"ACK confirma; NAK (o timeout) dispara la retransmisión."),
+Q16("RST2","T2 Encaminamiento",2,"El algoritmo de Dijkstra calcula:","el camino de menor coste desde un origen","el camino con menos saltos siempre","la ruta aleatoria","el árbol de expansión mínima".split(" | "),"Dijkstra da el camino mínimo por coste; puede no coincidir con el de menos saltos."),
+Q16("RST2","T2 Encaminamiento",2,"En enrutamiento por vector de distancia, el problema del 'recuento a infinito' se debe a:","anuncios de rutas que empeoran lentamente","demasiados saltos","falta de direcciones IP","exceso de ancho de banda".split(" | "),"El vector de distancia puede tardar en reflejar una caída; split-horizon y horizonte dividido lo mitigan."),
+Q16("RST2","T2 Encaminamiento",2,"El enrutamiento de estado de enlace:","cada nodo conoce el grafo completo y calcula por Dijkstra","solo conoce a su vecino","no usa métricas","es siempre más lento".split(" | "),"En link-state cada router difunde el estado de sus enlaces y calcula la ruta óptima localmente."),
+Q16("RST2","T2 Encaminamiento",1,"La técnica 'horizonte dividido' evita:","anunciar una ruta al vecino del que se aprendió","perder paquetes","duplicar direcciones","cifrar dos veces".split(" | "),"Split horizon no reanuncia hacia el vecino de origen, reduciendo el recuento a infinito."),
+Q16("RST2","T3 Modelos de referencia",1,"¿Cuántas capas tiene el modelo OSI?","7","4","5","6".split(" | "),"OSI tiene 7 capas; TCP/IP se suele resumir en 4."),
+Q16("RST2","T3 Modelos de referencia",2,"La encapsulación consiste en:","añadir cabecera (y trailer) en cada capa","quitar la cabecera al bajar","cifrar el payload","dividir en fragmentos iguales".split(" | "),"Cada capa añade su cabecera; por eso el porcentaje útil baja al encapsular."),
+Q16("RST2","T3 Modelos de referencia",2,"¿Qué capa se encarga del direccionamiento lógico (IP)?","Red","Enlace","Transporte","Física".split(" | "),"La capa de Red maneja el direccionamiento lógico y el encaminamiento."),
+Q16("RST2","T4 Redes de área local",2,"La trama mínima de Ethernet es de:","64 bytes","46 bytes","1500 bytes","18 bytes".split(" | "),"Ethernet exige 64 bytes de trama mínima; con menos de 46 de datos se rellena (padding)."),
+Q16("RST2","T4 Redes de área local",2,"¿Cuándo añade Ethernet padding a la trama?","Cuando los datos son menores de 46 bytes","Cuando son mayores de 1500","Siempre","Nunca".split(" | "),"Si el campo de datos < 46 bytes, se rellena para alcanzar la trama mínima de 64 bytes."),
+Q16("RST2","T4 Redes de área local",1,"La dirección MAC se usa a nivel de:","enlace","red","transporte","aplicación".split(" | "),"La MAC es la dirección física de la capa de enlace."),
+Q16("RST2","T1 Intercambio de datos (errores y flujo)",3,"Un código cíclico sistemático transmite:","mensaje + resto de dividir m(x)·x^(n-k) entre g(x)","solo el resto","el mensaje sin redundancia","el complemento del mensaje".split(" | "),"En sistemático se envía el mensaje seguido del resto (FCS) de la división módulo 2."),
+Q16("RST2","T2 Encaminamiento",3,"Si dos caminos tienen el mismo coste mínimo, Dijkstra:","puede elegir cualquiera de los costes mínimos","siempre elige el de más saltos","falla","usa el camino más largo".split(" | "),"Empates de coste se resuelven arbitrariamente; ambos son caminos mínimos."),
+Q16("RST2","T3 Modelos de referencia",1,"El modelo TCP/IP se describe habitualmente con:","4 capas","7 capas","3 capas","8 capas".split(" | "),"TCP/IP se resume en 4 capas (acceso, red, transporte, aplicación)."),
+Q16("RST2","T4 Redes de área local",2,"CSMA/CD en Ethernet:","escucha antes de transmitir y detecta colisiones","reserva un circuito","no comprueba el medio","solo usa ALOHA".split(" | "),"CSMA/CD: escucha (carrier sense), transmite y detecta colisiones para reintentar."),
+/* ---------- ED1 · Electrónica Digital 1 ---------- */
+Q16("ED1","T1 Diseño lógico y VHDL",1,"En VHDL, la entidad (entity) describe:","la interfaz (puertos)","el funcionamiento interno","la tecnología","el reloj".split(" | "),"entity = interfaz; architecture = funcionamiento."),
+Q16("ED1","T1 Diseño lógico y VHDL",2,"¿Cuántas señales de control necesita un multiplexor 2^n:1?","n","2^n","n+1","2n".split(" | "),"Un MUX 2^n:1 usa n líneas de selección.",true),
+Q16("ED1","T1 Diseño lógico y VHDL",2,"Con n controles, un multiplexor implementa funciones de:","n+1 variables","n variables","n-1 variables","2n variables".split(" | "),"Cada entrada del MUX es un minterm de las n variables de control: n+1 variables en total."),
+Q16("ED1","T2 Circuitos combinacionales",1,"Un decodificador de n entradas activa:","una de 2^n salidas","2n salidas","n salidas","2^(n-1) salidas".split(" | "),"Un decodificador n→2^n activa exactamente una salida según la entrada.",true),
+Q16("ED1","T2 Circuitos combinacionales",2,"Para compartir una línea entre varias salidas se usa:","triestado o colector abierto con pull-up","unir salidas tótem-pole","un multiplexor aritmético","un biestable".split(" | "),"Nunca se unen salidas tótem-pole; se usa triestado o colector abierto con resistencia pull-up."),
+Q16("ED1","T2 Circuitos combinacionales",2,"La salida de una puerta AND con una entrada a 0 vale:","0","1","depende de la otra","X".split(" | "),"AND: si una entrada es 0, la salida es 0."),
+Q16("ED1","T2 Circuitos combinacionales",2,"Un sumador completo (full adder) produce:","suma y acarreo","solo suma","solo acarreo","diferencia".split(" | "),"El full adder da la suma y el carry de salida a partir de dos bits y el carry de entrada."),
+Q16("ED1","T3 Circuitos secuenciales",2,"El tiempo de setup es:","el dato estable ANTES del flanco","el dato estable DESPUÉS del flanco","el retardo del reloj","la frecuencia máxima".split(" | "),"Setup: antes del flanco; hold: después del flanco."),
+Q16("ED1","T3 Circuitos secuenciales",2,"¿Cuántos biestables necesita un contador módulo N?","⌈log2 N⌉","N","2N","log10 N".split(" | "),"Con k biestables hay 2^k estados; k = ⌈log2 N⌉.",true),
+Q16("ED1","T3 Circuitos secuenciales",3,"La frecuencia máxima de un camino registro-registro es:","1/(t_co + t_comb + t_su)","1/t_comb","1/(t_co+t_su)","1/t_h".split(" | "),"F_max = 1/(t_co,max + t_comb,max + t_su); el hold no limita la frecuencia.",true),
+Q16("ED1","T3 Circuitos secuenciales",2,"Un registro de N etapas en serie saca el dato:","N ciclos después","1 ciclo después","2N ciclos","inmediatamente".split(" | "),"Un registro de desplazamiento de N etapas retrasa el dato N ciclos."),
+Q16("ED1","T4 Máquinas ASM",1,"En una ASM, el estado inicial (reset) es:","el que lleva el rombo de decisión","cualquiera","el último","el de mayor coste".split(" | "),"En una ASM síncrona el rombo marca el estado inicial/reset."),
+Q16("ED1","T4 Máquinas ASM",2,"Una máquina de Moore:","la salida depende solo del estado","la salida depende de las entradas","no tiene estados","es asíncrona".split(" | "),"Moore: salida función del estado; Mealy: salida función del estado y las entradas."),
+Q16("ED1","T4 Máquinas ASM",2,"N estados en binario requieren:","⌈log2 N⌉ biestables","N biestables","2N biestables","N/2".split(" | "),"Se codifican N estados con ⌈log2 N⌉ biestables.",true),
+Q16("ED1","T1 Diseño lógico y VHDL",1,"Un buffer triestado añade a la salida un estado:","alta impedancia (Z)","alto lógico fijo","bajo lógico fijo","oscilante".split(" | "),"El triestado añade el estado de alta impedancia (Z) además de 0 y 1."),
+Q16("ED1","T2 Circuitos combinacionales",1,"El complemento a 2 de un número se obtiene:","invirtiendo los bits y sumando 1","sumando 1 sin invertir","invirtiendo sin sumar","restando 1".split(" | "),"Complemento a 2 = complemento a 1 (invertir) + 1."),
+Q16("ED1","T3 Circuitos secuenciales",2,"El hold time se viola cuando:","t_co,min + t_comb,min < t_h","el reloj va muy lento","hay metaestabilidad nula","t_su es grande".split(" | "),"Si el dato cambia demasiado pronto tras el flanco (t_co,min+t_comb,min < t_h) se viola el hold; no se arregla bajando la frecuencia."),
+Q16("ED1","T4 Máquinas ASM",2,"El datapath de un sistema ASM:","guarda y opera los datos","decide el siguiente estado","genera el reloj","mide la temperatura".split(" | "),"El controlador decide; el datapath almacena y opera los datos."),
+Q16("ED1","T1 Diseño lógico y VHDL",2,"Un demultiplexor 1:2^n usa:","n señales de control","2^n controles","n+1 controles","ningún control".split(" | "),"El demux 1:2^n enruta la entrada a una de 2^n salidas con n controles.",true),
+Q16("ED1","T2 Circuitos combinacionales",2,"La forma canónica de suma de productos se basa en:","los minterms donde la salida vale 1","los maxterms","las don't care","el reloj".split(" | "),"La suma de minterms (los términos con salida 1) es la forma canónica SOP."),
+Q16("ED1","T3 Circuitos secuenciales",1,"Un biestable SR tiene:","2 estados estables","1 estado","0 estados","3 estados".split(" | "),"Un biestable (latch/flip-flop) tiene 2 estados estables: memoriza 1 bit."),
+/* ---------- ED2 · Electrónica Digital 2 ---------- */
+Q16("ED2","T1 Características de los CI",2,"La temperatura de unión se calcula:","Tj = Ta + P·θja","Tj = Ta - P·θja","Tj = P/θja","Tj = Ta·P".split(" | "),"Tj = Ta + P·θja (potencia por resistencia térmica más ambiente).",true),
+Q16("ED2","T1 Características de los CI",3,"El fan-out real de una puerta es:","el menor entre el de nivel bajo y el de nivel alto","el mayor de los dos","la suma","el promedio".split(" | "),"Fan-out = min(fan-out bajo, fan-out alto); manda el más restrictivo."),
+Q16("ED2","T1 Características de los CI",3,"El margen de ruido del circuito es:","el menor entre NM_H y NM_L","NM_H + NM_L","NM_H - NM_L","el mayor de los dos".split(" | "),"NM = min(NM_H, NM_L); el peor margen limita el circuito."),
+Q16("ED2","T2 Familias lógicas",2,"¿Por qué es más rápida la lógica Schottky TTL?","Evita la saturación del transistor","Usa más transistores","Baja la tensión de alimentación","Elimina el ruido".split(" | "),"El diodo Schottky impide la saturación, reduciendo el tiempo de conmutación."),
+Q16("ED2","T2 Familias lógicas",2,"Dos salidas de colector abierto cableadas juntas producen:","una AND de las salidas","una OR garantizada","una XOR","alta impedancia fija".split(" | "),"Colector abierto en común (con pull-up) implementa la AND cableada de las salidas."),
+Q16("ED2","T2 Familias lógicas",1,"La familia CMOS se caracteriza por:","bajo consumo estático","alto consumo estático","no funcionar a 5 V","usar solo TTL".split(" | "),"CMOS apenas consume en estático; solo disipa al conmutar."),
+Q16("ED2","T3 Memorias, osciladores y reloj",2,"Una memoria de 2^n posiciones necesita:","n líneas de dirección","2n líneas","n+1 líneas","n/2 líneas".split(" | "),"n líneas de dirección direccionan 2^n posiciones.",true),
+Q16("ED2","T3 Memorias, osciladores y reloj",2,"La diferencia clave entre SRAM y DRAM es:","DRAM guarda en condensadores y necesita refresco","SRAM necesita refresco","DRAM usa biestables","no hay diferencia".split(" | "),"DRAM usa condensadores (refresco periódico); SRAM usa biestables (sin refresco)."),
+Q16("ED2","T3 Memorias, osciladores y reloj",2,"Un byte con bit de paridad ocupa:","9 bits","8 bits","7 bits","10 bits".split(" | "),"8 bits de datos + 1 de paridad = 9 bits."),
+Q16("ED2","T4 Máquinas ASM",2,"En una ASM síncrona, el rombo representa:","la decisión/estado inicial","un registro","una salida Mealy","el reloj".split(" | "),"El rombo marca la bifurcación de decisión y el estado de reset."),
+Q16("ED2","T5 ASM como controlador",2,"Un registro de 8 bits modelado como ASM pura tiene:","256 estados","8 estados","16 estados","2 estados".split(" | "),"8 biestables → 2^8 = 256 estados.",true),
+Q16("ED2","T5 ASM como controlador",2,"En un sistema ASM, el controlador:","decide el flujo de estados","opera los datos","genera señales analógicas","mide el ruido".split(" | "),"El controlador genera las señales de control; el datapath opera los datos."),
+Q16("ED2","T6 Microprocesadores",2,"Un salto (JP) consiste en:","cargar el PC con la dirección destino en vez de incrementarlo","sumar 1 al PC","vaciar la pila","leer un puerto".split(" | "),"Un salto carga el PC con el destino; la instrucción JP ocupa código + dirección."),
+Q16("ED2","T6 Microprocesadores",2,"Con k bits de opcode caben:","2^k instrucciones","k instrucciones","2k instrucciones","k^2".split(" | "),"k bits de código de operación codifican 2^k instrucciones distintas.",true),
+Q16("ED2","T6 Microprocesadores",1,"Los puertos de entrada/salida permiten:","comunicar el microprocesador con el exterior","aumentar la RAM","cambiar el reloj","guardar el PC".split(" | "),"Los puertos E/S comunican el microprocesador con dispositivos externos."),
+Q16("ED2","T1 Características de los CI",2,"La curva de salida de un CI muestra:","una tensión por cada corriente de salida (H y L)","solo la frecuencia","la temperatura","el consumo en reposo".split(" | "),"Hay una curva por estado (H y L): a más corriente, la tensión se aleja del valor ideal."),
+Q16("ED2","T2 Familias lógicas",3,"La tensión VCE de un transistor Schottky saturado es menor que en TTL normal, lo que:","reduce el tiempo de almacenamiento","aumenta el consumo","baja la inmunidad al ruido","no afecta".split(" | "),"Al no saturar, desaparece el tiempo de almacenamiento y la puerta es más rápida."),
+Q16("ED2","T3 Memorias, osciladores y reloj",1,"Un oscilador astable produce:","una señal periódica sin estado estable","un único pulso","un nivel fijo","dos estados estables".split(" | "),"Astable: 0 estados estables, oscila libremente; monoestable: 1; biestable: 2."),
+Q16("ED2","T4 Máquinas ASM",1,"¿Cuántos biestables hacen falta para 8 estados?","3","8","4","2".split(" | "),"⌈log2 8⌉ = 3 biestables.",true),
+Q16("ED2","T5 ASM como controlador",2,"El camino de datos (datapath) frente al controlador:","almacena y transforma datos; el controlador los gobierna","decide los estados","no interactúa con el control","es lo mismo".split(" | "),"Se divide el sistema: controlador decide, datapath guarda y opera."),
+Q16("ED2","T6 Microprocesadores",2,"El código máquina se almacena en:","memoria, listo para ser ejecutado por el microprocesador","solo en la pila","en los puertos","en el reloj".split(" | "),"El código máquina reside en memoria y el microprocesador lo ejecuta instrucción a instrucción."),
+Q16("ED2","T1 Características de los CI",3,"Si duplicas la corriente de salida, en la curva de salida la tensión:","se aleja del valor ideal (cae)","sube al ideal","no cambia","se vuelve negativa siempre".split(" | "),"A mayor corriente, mayor caída: la tensión se aleja del valor ideal lógico."),
+/* ---------- SYS · Señales y Sistemas ---------- */
+Q16("SYS","T1 Señales y sistemas",1,"Una señal periódica no nula es de:","potencia (energía infinita)","energía finita","ni energía ni potencia","energía nula".split(" | "),"Las periódicas no nulas tienen E=∞ y P finita: son de potencia."),
+Q16("SYS","T1 Señales y sistemas",2,"La parte par de x(t) es:","(x(t)+x(-t))/2","(x(t)-x(-t))/2","x(t)+x(-t)","x(t)·x(-t)".split(" | "),"x_p = (x(t)+x(-t))/2; x_i = (x(t)-x(-t))/2."),
+Q16("SYS","T1 Señales y sistemas",2,"La propiedad de selección de la delta: ∫x(t)δ(t-t0)dt =","x(t0)","x(0)","1","δ(t0)".split(" | "),"La delta extrae el valor de x en t0."),
+Q16("SYS","T1 Señales y sistemas",2,"Un sistema cuya salida depende solo de la entrada en el mismo instante es:","sin memoria","causal con memoria","invariante","invertible".split(" | "),"Sin memoria (estático): y(t) depende solo de x(t)."),
+Q16("SYS","T2 Sistemas LTI",2,"La convolución discreta de longitudes N1 y N2 da una salida de longitud:","N1+N2-1","N1+N2","N1·N2","max(N1,N2)".split(" | "),"La convolución alarga: longitud N1+N2-1.",true),
+Q16("SYS","T2 Sistemas LTI",2,"Un sistema LTI es estable (BIBO) si:","Σ|h[n]| < ∞","Σh[n] = 0","h[n] es periódica","la entrada es nula".split(" | "),"Estabilidad BIBO: la respuesta al impulso es absolutamente sumable."),
+Q16("SYS","T2 Sistemas LTI",2,"y[n] = Σ x[k]h[n-k] representa:","la convolución (respuesta de un LTI)","una correlación","la transformada","un muestreo".split(" | "),"Es la convolución entrada·respuesta al impulso de un sistema LTI."),
+Q16("SYS","T3 Análisis de Fourier",2,"Comprimir una señal en el tiempo:","ensancha su espectro","lo estrecha","no lo altera","lo elimina".split(" | "),"La compresión temporal produce expansión espectral (dualidad)."),
+Q16("SYS","T3 Análisis de Fourier",2,"La transformada de Fourier de la derivada dx/dt es:","jω·X(ω)","X(ω)/jω","|X(ω)|^2","X(-ω)".split(" | "),"La derivación en tiempo multiplica por jω en frecuencia."),
+Q16("SYS","T3 Análisis de Fourier",2,"La TFD (series de Fourier) es periódica de periodo:","2π","π","1","2".split(" | "),"La TFD es periódica en ω con periodo 2π."),
+Q16("SYS","T4 Transformadas de Laplace y Z",2,"Un sistema causal con polo en z=a es estable si:","|a| < 1","|a| > 1","a = 1","a = 0".split(" | "),"Causal y |polo|<1 (dentro de la circunferencia unidad) ⇒ estable."),
+Q16("SYS","T4 Transformadas de Laplace y Z",2,"En un sistema causal, la ROC queda:","a la derecha del polo más a la derecha","a la izquierda","entre dos polos","en todo el plano".split(" | "),"Para causalidad, la ROC es exterior al polo más a la derecha."),
+Q16("SYS","T4 Transformadas de Laplace y Z",1,"La transformada de e^(s0 t)u(t) es:","1/(s-s0)","1/(s+s0)","s-s0","e^s0".split(" | "),"Par transformada: e^(s0 t)u(t) ↔ 1/(s-s0), ROC Re(s)>Re(s0)."),
+Q16("SYS","T5 Muestreo",1,"Para evitar aliasing, la frecuencia de muestreo debe cumplir:","fs > 2·fmax","fs = fmax","fs < fmax","fs = 2·fmax exacto".split(" | "),"Nyquist: fs > 2·fmax (mayor que el doble del ancho de banda).",true),
+Q16("SYS","T5 Muestreo",2,"La frecuencia angular digital se relaciona con la analógica por:","Ω = ω·Ts","Ω = ω/Ts","Ω = ω+Ts","Ω = ω·fs^2".split(" | "),"Ω = ω·Ts = ω/fs (normalización por el periodo de muestreo).",true),
+Q16("SYS","T5 Muestreo",3,"Si muestreamos cos(2π f t) con f > fs/2 sin antialiasing, aparece:","una frecuencia |f - fs| en banda base","la misma f","una continua","nada".split(" | "),"Con f>fs/2 hay solapamiento: la réplica que cae en banda base es |f-fs|.",true),
+Q16("SYS","T1 Señales y sistemas",2,"El sistema y(t)=x(t+1) es:","no causal","causal","sin memoria","estable siempre".split(" | "),"Anticipa un valor futuro (t+1): no causal."),
+Q16("SYS","T2 Sistemas LTI",2,"La suma de las muestras de y=x*h cumple:","Σy = (Σx)(Σh)","Σy = Σx+Σh","Σy = Σx-Σh","Σy = max".split(" | "),"En z=1, Y(1)=X(1)H(1): la suma de la convolución es el producto de las sumas."),
+Q16("SYS","T3 Análisis de Fourier",1,"Una señal de energía tiene:","E finita y P media nula","E infinita","P infinita","ni E ni P".split(" | "),"Energía finita ⇒ potencia media 0: señal de energía."),
+Q16("SYS","T1 Señales y sistemas",2,"El periodo fundamental de cos(2π k/N n) es:","N/mcd(k,N)","N","k","N·k".split(" | "),"T = N/gcd(k,N) tras reducir la fracción k/N.",true),
+/* ---------- MAT3 · Matemáticas 3 ---------- */
+Q16("MAT3","T1 Aritmética entera y modular",1,"La congruencia ax ≡ b (mod m) tiene solución si:","mcd(a,m) | b","mcd(a,m) = b","a | m","b = 0".split(" | "),"Tiene solución si el mcd(a,m) divide a b.",true),
+Q16("MAT3","T1 Aritmética entera y modular",2,"El inverso de a módulo p (primo) existe si:","mcd(a,p)=1","a=p","a=0","a es par".split(" | "),"Existe inverso si a es invertible módulo p, es decir mcd(a,p)=1."),
+Q16("MAT3","T1 Aritmética entera y modular",2,"Por el pequeño teorema de Fermat, si mcd(a,m)=1:","a^φ(m) ≡ 1 (mod m)","a^m ≡ 0","a^2 ≡ 1","a ≡ m".split(" | "),"Euler: a^φ(m) ≡ 1 (mod m) cuando mcd(a,m)=1."),
+Q16("MAT3","T1 Aritmética entera y modular",2,"El mcd(a,b) por Euclides se obtiene:","repitiendo mcd(b, a mod b) hasta resto 0","multiplicando a·b","sumando a+b","dividiendo a/b".split(" | "),"Algoritmo de Euclides: mcd(a,b)=mcd(b,a mod b) hasta resto 0."),
+Q16("MAT3","T2 Sistemas de ecuaciones lineales",2,"Un sistema es compatible determinado si:","rg(A)=rg(A|b)=n incógnitas","rg(A)≠rg(A|b)","rg(A)<rg(A|b)","rg(A)=0".split(" | "),"Rouché-Frobenius: SCD si rg(A)=rg(A|b)=n."),
+Q16("MAT3","T2 Sistemas de ecuaciones lineales",2,"Un sistema es incompatible si:","rg(A) ≠ rg(A|b)","rg(A)=rg(A|b)","tiene fila nula","es homogéneo".split(" | "),"SI cuando el rango de la ampliada supera al de A (fila 0 0 0 | k)."),
+Q16("MAT3","T2 Sistemas de ecuaciones lineales",2,"Si rg(A)=rg(A|b)=r<n, el sistema es:","compatible indeterminado con n-r parámetros","determinado","incompatible","sin solución".split(" | "),"SCI: infinitas soluciones con n-r grados de libertad."),
+Q16("MAT3","T3 Espacios vectoriales",2,"Una suma U+W es directa si:","U ∩ W = {0}","U ∪ W = V","U = W","dim U = dim W".split(" | "),"Suma directa ⇔ intersección solo el vector nulo."),
+Q16("MAT3","T4 Aplicaciones lineales",2,"El teorema de la dimensión dice:","dim ker f + dim Im f = dim V","dim ker = dim Im","dim V = 0","dim Im = n+1".split(" | "),"dim ker f + dim Im f = dim V (núcleo más imagen).",true),
+Q16("MAT3","T4 Aplicaciones lineales",2,"Las columnas de la matriz de una aplicación lineal son:","las imágenes de los vectores de la base","los coeficientes del vector","las filas de la matriz","el determinante".split(" | "),"La columna j es f(base_j): imagen del vector j de la base."),
+Q16("MAT3","T5 Diagonalización",2,"Una matriz 2x2 tiene valores propios que cumplen:","suma = traza, producto = determinante","suma = determinante","producto = traza","son siempre 0".split(" | "),"λ1+λ2 = traza(A); λ1·λ2 = det(A).",true),
+Q16("MAT3","T5 Diagonalización",2,"Una matriz real simétrica es:","diagonalizable ortogonalmente","nunca diagonalizable","singular siempre","no tiene autovalores".split(" | "),"Toda simétrica real es diagonalizable por una matriz ortogonal."),
+Q16("MAT3","T5 Diagonalización",3,"Una matriz es diagonalizable si para cada autovalor:","la multiplicidad geométrica = algebraica","geométrica > algebraica","algebraica = 0","det = 1".split(" | "),"Diagonalizable ⇔ coinciden multiplicidad geométrica y algebraica en cada λ."),
+Q16("MAT3","T6 Espacios euclídeos",1,"La norma euclídea de (a,b) es:","√(a²+b²)","a+b","a²+b²","|a|+|b|".split(" | "),"‖v‖ = √(⟨v,v⟩) = √(a²+b²).",true),
+Q16("MAT3","T6 Espacios euclídeos",2,"La desigualdad de Cauchy-Schwarz es:","|⟨v,w⟩| ≤ ‖v‖·‖w‖","|⟨v,w⟩| ≥ ‖v‖·‖w‖","⟨v,w⟩ = 0","‖v‖ = ‖w‖".split(" | "),"Cauchy-Schwarz: |⟨v,w⟩| ≤ ‖v‖‖w‖."),
+Q16("MAT3","T6 Espacios euclídeos",2,"En R^n, dim W + dim W⊥ =","n","2n","n-1","0".split(" | "),"Un subespacio y su complemento ortogonal suman la dimensión total n.",true),
+Q16("MAT3","T6 Espacios euclídeos",2,"Dos vectores son ortogonales si su producto escalar vale:","0","1","-1","‖v‖".split(" | "),"Ortogonalidad ⇔ ⟨v,w⟩ = 0."),
+Q16("MAT3","T1 Aritmética entera y modular",2,"Resuelve 3x ≡ 4 (mod 7). El inverso de 3 es 5, luego:","x ≡ 6","x ≡ 4","x ≡ 5","x ≡ 1".split(" | "),"x ≡ 4·5 = 20 ≡ 6 (mod 7).",true),
+Q16("MAT3","T2 Sistemas de ecuaciones lineales",1,"Un sistema homogéneo (b=0) es siempre:","compatible (al menos la solución trivial)","incompatible","determinado","sin solución".split(" | "),"b=0 ⇒ rg(A)=rg(A|b): siempre compatible."),
+Q16("MAT3","T4 Aplicaciones lineales",2,"Si dim Im f = r y f: R^n→R^m, entonces dim ker f =","n - r","m - r","r","n + r".split(" | "),"Por el teorema de la dimensión: dim ker = n - r.",true),
+Q16("MAT3","T5 Diagonalización",1,"Los valores propios de una matriz triangular son:","los elementos de su diagonal","siempre 0","la traza al cuadrado","el determinante".split(" | "),"En una triangular, los autovalores son los pivotes de la diagonal."),
+/* ---------- PROG2 · Programación 2 ---------- */
+Q16("PROG2","T1 Ficheros",1,"¿Qué biblioteca hay que incluir para usar ifstream/ofstream?","<fstream>","<iostream>","<string>","<cstdio>".split(" | "),"fstream define ifstream (lectura) y ofstream (escritura)."),
+Q16("PROG2","T1 Ficheros",2,"¿Cuándo se usa while (f >> x)?","para leer mientras la lectura tenga éxito","para escribir un fichero","para abrir el fichero","para cerrar el fichero".split(" | "),"El bucle lee mientras la extracción sea válida; se detiene al fallar/fin."),
+Q16("PROG2","T1 Ficheros",1,"Un fichero .cpp o .csv es un fichero de:","texto","binario","objeto","ejecutable".split(" | "),"Se codifican como caracteres (ASCII/Unicode): son de texto."),
+Q16("PROG2","T1 Ficheros",2,"¿Qué diferencia a un fichero binario de uno de texto?","el binario se interpreta como bytes con un formato","el binario es más lento siempre","el texto no se puede leer","el binario ocupa el doble".split(" | "),"En binario la información son bytes con un formato (p.ej. IEEE 754), no caracteres."),
+Q16("PROG2","T2 TAD y modularidad",1,"La especificación de un módulo describe:","qué hace (interfaz)","cómo lo implementa","el lenguaje exacto","la máquina".split(" | "),"La especificación dice qué hace; la implementación, cómo."),
+Q16("PROG2","T2 TAD y modularidad",2,"En C++, la declaración de tipos y prototipos va en:","el .hpp","el .cpp","el main","el Makefile".split(" | "),"El .hpp contiene tipos y prototipos; el .cpp, la implementación."),
+Q16("PROG2","T2 TAD y modularidad",2,"¿Cuántas veces se define el destructor ~Clase()?","una sola vez","una por método","ninguna","dos".split(" | "),"Cada clase tiene un único destructor ~Clase()."),
+Q16("PROG2","T3 Memoria dinámica",2,"Tras 'delete p', el puntero p:","sigue apuntando al mismo sitio (no se pone a nullptr solo)","se pone a nullptr automáticamente","se borra la variable","apunta a la pila".split(" | "),"delete libera la memoria pero no nulifica el puntero: hazlo tú (p=nullptr)."),
+Q16("PROG2","T3 Memoria dinámica",2,"'new' reserva memoria en:","el heap (memoria dinámica)","la pila","el código","los registros".split(" | "),"new asigna en el heap; la pila es para variables automáticas."),
+Q16("PROG2","T3 Memoria dinámica",2,"Al insertar en una lista enlazada hay que:","guardar el siguiente nodo antes de hacer delete","borrar la cabeza","no usar punteros","duplicar la lista".split(" | "),"Guarda el puntero al siguiente antes de liberar el nodo actual."),
+Q16("PROG2","T4 Programación genérica y STL",2,"¿Qué imprime v.back() tras sort(v.begin(),v.end())?","el mayor elemento","el menor","el primero insertado","un elemento aleatorio".split(" | "),"Tras ordenar ascendente, back() es el último (el mayor)."),
+Q16("PROG2","T4 Programación genérica y STL",1,"Una plantilla se declara con:","template<typename T>","template T","class T;","new T".split(" | "),"template<typename T> introduce un tipo genérico."),
+Q16("PROG2","T4 Programación genérica y STL",2,"cbegin()/cend() de un contenedor devuelven:","iteradores de solo lectura","iteradores de escritura","el tamaño","una copia".split(" | "),"Los iteradores const (cbegin/cend) son de solo lectura."),
+Q16("PROG2","T5 Colecciones",2,"¿Qué estructura NO guarda repetidos?","std::set","std::vector","std::stack","std::queue".split(" | "),"Un set inserta solo claves únicas; vector/pila/cola admiten repetidos."),
+Q16("PROG2","T5 Colecciones",2,"En std::map, cada elemento es:","un par (first, second)","un único valor","un índice","una lista".split(" | "),"map guarda pares clave-valor: first (clave) y second (valor)."),
+Q16("PROG2","T5 Colecciones",2,"Una pila (stack) es LIFO: el último en entrar es:","el primero en salir","el último en salir","nunca sale","sale al azar".split(" | "),"LIFO: Last In, First Out; top() es el último apilado."),
+Q16("PROG2","T5 Colecciones",2,"Una cola (queue) es FIFO: el primero en entrar es:","el primero en salir","el último en salir","nunca sale","sale al azar".split(" | "),"FIFO: First In, First Out; front() es el primero encolado."),
+Q16("PROG2","T3 Memoria dinámica",2,"¿Qué imprime? int* p=new int(5); *p+=3; cout<<*p;","8","5","3","15".split(" | "),"*p vale 5, luego 5+3 = 8.",true),
+Q16("PROG2","T1 Ficheros",2,"¿Qué pasa si no se comprueba fail() tras abrir un ifstream?","se opera sobre un flujo no válido","se abre automáticamente","se borra el fichero","no afecta".split(" | "),"Sin comprobar fail(), leerías de un flujo inválido y el bucle no funcionaría."),
+Q16("PROG2","T2 TAD y modularidad",2,"Pasar un objeto grande por valor a una función:","copia el objeto completo","no copia nada","modifica el original","es más rápido siempre".split(" | "),"Por valor se copia; por referencia (&) se evita la copia y se puede modificar el original."),
+Q16("PROG2","T4 Programación genérica y STL",2,"sort(v.begin(), v.end()) ordena el vector:","de menor a mayor","de mayor a menor","alfabéticamente","no lo ordena".split(" | "),"sort ascendente por defecto: de menor a mayor.")
+];
+
+function tlV16AddQuestions(){if(S.v16Q>=1)return;const ids=new Set(S.qs.map(q=>q.id));let n=0;TL_V16_QUESTIONS.forEach(o=>{try{const q=normQ(o);if(!ids.has(q.id)){ids.add(q.id);S.qs.push(q);n++}}catch(e){console.error('Pregunta v16 no válida',e,o)}});S.v16Q=1;save();if(n)setTimeout(()=>toast(`📚 +${n} preguntas v16 de tus temarios`),2200)}
+mergeBank=(old=>function(){tlV16AddQuestions();return old()})(mergeBank);
+
+/* ---------- Generadores paramétricos nuevos (fórmulas del temario) ---------- */
+GENS.push(
+ {a:'RST1',t:RT1,d:2,c:1,f:()=>{const L=pk([500,1000,2000,4000,8000]),R=pk([1,2,4,10]),d=pk([100,500,1000,2000]),v=2e8,tt=L*8/(R*1e6),tp=d*1e3/v,tot=tt+tp,F=x=>nf(x,3)+' s';return{q:`Trama de ${L} bytes a $R=${R}$ Mbps por ${d} km ($v=2\\cdot10^8$ m/s). ¿Retardo total (tx+prop)?`,ops:opsN(tot,[tt,tp,tot*2,tt+2*tp],F),sol:`$t_{tx}=\\frac{${L}\\cdot8}{${R}\\cdot10^6}=${nf(tt,3)}$ s, $t_{prop}=\\frac{${d}\\cdot10^3}{2\\cdot10^8}=${nf(tp,3)}$ s. Total ${nf(tot,3)} s.`}}},
+ {a:'RST2',t:'T4 Redes de área local',d:2,c:0,f:()=>{const pre=pk([24,25,26,27,28]),block=2**(32-pre),ip=ri(1,254)+block*ri(1,5),net=ip-(ip%block),bc=net+block-1,F=x=>`${x>>>24&255}.${x>>>16&255}.${x>>>8&255}.${x&255}`;return{q:`¿Cuál es la dirección de red de ${F(ip)}/${pre}?`,ops:opsS(F(net),[F(bc),F(net+1),F(ip)]),sol:`Bloque $=2^{32-${pre}}=${block}$. Red $=${F(net)}$ (múltiplo del bloque), broadcast $=${F(bc)}$.`}}},
+ {a:'RST2',t:'T4 Redes de área local',d:2,c:0,f:()=>{const pre=pk([24,25,26,27,28,30]),hosts=2**(32-pre)-2;return{q:`¿Cuántas direcciones de host utilizables hay en una red /${pre}?`,ops:opsI(hosts,[2**(32-pre),hosts+2,hosts-1,pre]),sol:`$2^{32-${pre}}-2=${hosts}$ (se restan red y broadcast).`}}}
+);
+
+/* =====================================================================
+   CENTRO DE MANDO v16 · NOC profundo
+   ===================================================================== */
+/* --- Taller permanente Nv.1–5 (los 4 módulos pedidos + caché) --- */
+Object.assign(NC_MODULES.gen,{n:'Amplificador de Señal',e:'📡',d:'+10 de integridad máxima del enlace por nivel',max:5,cost:[100,200,340,520,760]});
+Object.assign(NC_MODULES.cond,{n:'Condensador de Rack',e:'🔋',d:'+1 ⚡ de ancho de banda inicial por nivel',max:5,cost:[90,180,300,460,680]});
+Object.assign(NC_MODULES.radar,{n:'Analizador de Espectro',e:'🛰️',d:'Revela tema y modificador de los nodos ocultos del mapa',max:5,cost:[200,320,460,620,820]});
+Object.assign(NC_MODULES.tel,{n:'Caché de Telemetría',e:'📈',d:'+10 % de Créditos I+D y Fragmentos por nivel',max:5,cost:[150,280,430,600,840]});
+NC_MODULES.cache=NC_MODULES.tel;
+
+/* --- Estado Óptimo (Overclock Táctico): 3 aciertos seguidos --- */
+const TL_v16_ncAfter=ncAfter;
+ncAfter=function(k){const N=M&&M.nc;const before=N?N.crAcc:0;TL_v16_ncAfter(k);if(!M||!M.nc)return;const N2=M.nc,r=M.res[M.res.length-1];
+ if(r&&r.ok){if(M.combo>=3&&!N2.optimo){N2.optimo=true;N2.bw=Math.min(NC_BWMAX,N2.bw+1);floatTxt('⚡ ESTADO ÓPTIMO ×1,5','#fde047',320);try{ncSay('¡Estado Óptimo! +1 ⚡ y puntos ×1,5 mientras no falles.',3000,3)}catch(e){}}
+  if(N2.optimo){const delta=N2.crAcc-before,extra=Math.round(delta*0.5);if(extra>0){N2.crAcc+=extra;floatTxt('+'+extra+' 🔬 ×1,5','#fde047',360)}}}
+ else if(r&&!r.saved){N2.optimo=false}
+ save();try{ncRefreshHUD()}catch(e){}};
+
+/* --- Barra de telemetría NOC en vivo (verde/ámbar/rojo) --- */
+const TL_v16_ncHUD=ncHUD;
+ncHUD=function(){let base='';try{base=TL_v16_ncHUD()}catch(e){base=''}const N=M&&M.nc;if(!N)return base;const run=S.nc.run;let cls='ok',lab='NOC EN LÍNEA';
+ if(run){const r=run.integ/run.max;cls=r>.6?'ok':r>.3?'warn':'crit';lab=r>.6?'🟢 RED ESTABLE':r>.3?'🟡 RED DEGRADADA':'🔴 RED CRÍTICA'}
+ const bar=`<div class="ncnoc ${cls}"><i></i><span>${lab}</span>${N.optimo?'<b class="ncopt">⚡ ESTADO ÓPTIMO</b>':''}</div>`;return bar+base};
+
+/* --- Nodos de reabastecimiento y laboratorio táctico en el mapa --- */
+const TL_v16_ncNewRun=ncNewRun;
+ncNewRun=function(a){const run=TL_v16_ncNewRun(a);if(!run)return run;const add=(i,node)=>{const L=run.layers[i];if(L&&L.length<4&&!L.some(x=>x.id===node.id))L.push(node)};add(2,{id:'2sup',b:'safe',mod:'calm',sup:1});add(4,{id:'4lab',b:'mix',mod:'calm',lab:1});save();return run};
+let TL_v16_supId=null;
+const TL_v16_ncLaunch=ncLaunch;
+ncLaunch=function(id,rep){const N=S.nc;if(!rep&&N.run){const n=ncNode(N.run,id);if(n&&n.sup)return ncResupply(n);if(n&&n.lab)return ncLabNode(n)}const r=TL_v16_ncLaunch(id,rep);if(r===undefined&&M&&M.nc&&N.run&&N.run.supBonus){M.nc.bw=Math.min(NC_BWMAX,M.nc.bw+N.run.supBonus);N.run.supBonus=0;try{ncRefreshHUD()}catch(e){}}return r};
+function ncResupply(n){TL_v16_supId=n.id;const run=S.nc.run;if(!run)return;modal(`<div class="ncbrief"><div class="ncb-h"><span>🔧</span><div><small>ESTACIÓN DE REABASTECIMIENTO</small><b>Elige una mejora del enlace</b></div></div><div class="mut sm">Integridad ${Math.round(run.integ)}/${run.max} · ⚡ base ${1+ncMod('cond')} · 🧩 ${S.nc.fr} fragmentos</div><div style="margin-top:12px"><button class="menu" onclick="ncSup(0)"><span>🛡️</span><div><b>Reparar integridad +30</b><small>Restaurar el enlace del sector</small></div><i>›</i></button><button class="menu" onclick="ncSup(1)"><span>🔋</span><div><b>Capacitor de refuerzo</b><small>+2 ⚡ de ancho de banda en la próxima misión</small></div><i>›</i></button><button class="menu" onclick="ncSup(2)"><span>⬆️</span><div><b>Calibrar carta del rack</b><small>Sube 1 nivel la primera carta (8 🧩)</small></div><i>›</i></button></div></div>`)}
+function ncSup(i){const run=S.nc.run;if(!run)return;if(i===0){run.integ=Math.min(run.max,run.integ+30)}else if(i===1){run.supBonus=(run.supBonus||0)+2}else if(i===2){if(S.nc.fr<8){toast('Necesitas 8 🧩');return}S.nc.fr-=8;const id=S.nc.rack[0];if(id&&S.cards[id]){const mx=maxL(S.cards[id]);if((S.cards[id].l||1)<mx)S.cards[id].l=(S.cards[id].l||1)+1}}
+ if(TL_v16_supId){run.res[TL_v16_supId]='ok';run.path.push(TL_v16_supId);run.layer++}save();closeModal();sfx('gold');render()}
+function ncLabNode(n){const run=S.nc.run;if(!run)return;ncLab(()=>{run.res[n.id]='ok';run.path.push(n.id);run.cr=(run.cr||0)+12;run.layer++;save();render()})}
+
+/* --- Eventos dinámicos de crisis en vivo (riesgo/recompensa) --- */
+const NC_CRISIS=[
+ {t:'Interferencia en el Enlace',e:'📶',d:'Ruido en el canal. Decide cómo estabilizar la señal.',o:[
+  {n:'Activar filtro de banda',s:'−8 integridad, +40 🔬',fx:r=>{r.integ=Math.max(1,r.integ-8);r.cr=(r.cr||0)+40}},
+  {n:'Reenrutar por nodo seguro',s:'+10 integridad, −20 🔬',fx:r=>{r.integ=Math.min(r.max,r.integ+10);r.cr=Math.max(0,(r.cr||0)-20)}},
+  {n:'Confiar en el canal',s:'50 %: +80 🔬 o −15 integridad',fx:r=>{if(Math.random()<.5)r.cr=(r.cr||0)+80;else r.integ=Math.max(1,r.integ-15)}}]},
+ {t:'Congestión en el Core',e:'🌊',d:'El búfer del core se satura. Elige prioridad.',o:[
+  {n:'Priorizar tráfico crítico',s:'+2 🧩, −5 integridad',fx:r=>{r.fr=(r.fr||0)+2;r.integ=Math.max(1,r.integ-5)}},
+  {n:'Esperar a que escampe',s:'+15 integridad',fx:r=>{r.integ=Math.min(r.max,r.integ+15)}},
+  {n:'Ampliar búfer',s:'+30 🔬, +1 🧩',fx:r=>{r.cr=(r.cr||0)+30;r.fr=(r.fr||0)+1}}]},
+ {t:'Corte de Fibra',e:'✂️',d:'Se ha caído un enlace. ¿Cómo respondes?',o:[
+  {n:'Conmutar a enlace de respaldo',s:'−12 integridad, +60 🔬',fx:r=>{r.integ=Math.max(1,r.integ-12);r.cr=(r.cr||0)+60}},
+  {n:'Reparar la fibra (coste)',s:'−30 🔬, +20 integridad',fx:r=>{r.cr=Math.max(0,(r.cr||0)-30);r.integ=Math.min(r.max,r.integ+20)}}]},
+ {t:'Desajuste de Enrutamiento',e:'🔀',d:'Las tablas de ruta están desincronizadas.',o:[
+  {n:'Reconvergencia rápida',s:'+50 🔬',fx:r=>{r.cr=(r.cr||0)+50}},
+  {n:'Esperar propagación',s:'+12 integridad',fx:r=>{r.integ=Math.min(r.max,r.integ+12)}},
+  {n:'Forzar ruta óptima',s:'+3 🧩, −6 integridad',fx:r=>{r.fr=(r.fr||0)+3;r.integ=Math.max(1,r.integ-6)}}]}
+];
+let TL_v16_crisis=null;
+function ncMaybeCrisis(run){if(!run||S.nc.run!==run||M)return;if(Math.random()>.6)return;TL_v16_crisis=pk(NC_CRISIS);const c=TL_v16_crisis;modal(`<div class="nccrisis"><div class="ncb-h"><span>${c.e}</span><div><small>⚠️ CRISIS EN VIVO</small><b>${esc(c.t)}</b></div></div><div class="mut sm">${esc(c.d)}</div><div style="margin-top:12px">${c.o.map((o,i)=>`<button class="menu" onclick="ncCrisis(${i})"><span>›</span><div><b>${esc(o.n)}</b><small>${esc(o.s)}</small></div><i>›</i></button>`).join('')}</div></div>`);sfx('alarm')}
+function ncCrisis(i){const c=TL_v16_crisis,run=S.nc.run;if(!c||!run){closeModal();return}const o=c.o[i];if(o)try{o.fx(run)}catch(e){}TL_v16_crisis=null;save();closeModal();render()}
+
+/* --- Caché de telemetría: multiplicar recompensas + crisis tras misión --- */
+const TL_v16_ncFinish=ncFinish;
+ncFinish=function(){TL_v16_ncFinish();try{const lv=ncMod('tel');if(lv>0&&typeof NC_LAST!=='undefined'&&NC_LAST){const extra=Math.round((NC_LAST.cr+NC_LAST.fr)*0.1*lv);if(extra>0){S.nc.cr+=extra;NC_LAST.cr+=extra;NC_LAST.lines=NC_LAST.lines||[];NC_LAST.lines.push('📈 Caché de telemetría: +'+extra+' 🔬');save()}}const run=S.nc.run;if(run&&NC_LAST&&NC_LAST.ok)setTimeout(()=>ncMaybeCrisis(run),750)}catch(e){console.error(e)}};
+
+/* --- 4.º mini-lab táctil: Subnetting / Máscara CIDR --- */
+NC_LABS.subnet={n:'Subnetting CIDR',e:'🧮',d:'Dada una IP y un prefijo, toca la dirección de RED correcta antes de que se agote el tiempo.',mount:ncLabSubnet};
+function ncLabSubnet(el,api){const pre=pk([24,25,26,27,28]),block=2**(32-pre),ip=ri(1,254)+block*ri(1,6),net=ip-(ip%block),bc=net+block-1;
+ const F=x=>`${x>>>24&255}.${x>>>16&255}.${x>>>8&255}.${x&255}`;const cand=[net,bc,net+1,ip];const opts=shuffle(cand).slice(0,4);if(!opts.includes(net))opts[0]=net;
+ el.innerHTML=`<div class="ncsub"><div class="ncsub-ip">${F(ip)}<small>/${pre}</small></div><div class="mut sm">Toca la dirección de <b>red</b> (bloque de ${block})</div><div class="ncsub-opts">${opts.map((v,i)=>`<button type="button" data-v="${v}">${F(v)}</button>`).join('')}</div><div id="ncsub-msg" class="ncsub-msg"></div></div>`;
+ const msg=el.querySelector('#ncsub-msg');let done=false;
+ el.querySelectorAll('.ncsub-opts button').forEach(b=>b.addEventListener('click',()=>{if(done)return;const v=+b.dataset.v;if(v===net){done=true;b.classList.add('ok');if(msg)msg.innerHTML='<b class="g">✅ Red correcta</b>';api.win()}else{b.classList.add('bad');api.penalty(2);sfx('error');vib(40);if(msg)msg.innerHTML='<b class="r">✗ Esa es '+ (v===bc?'broadcast':v===net+1?'primer host':'otra')+'</b>'}}));
+ return ()=>{}}
+
 /* ====== arranque ====== */
 load();init();render();
