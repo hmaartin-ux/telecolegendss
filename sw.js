@@ -1,12 +1,13 @@
 'use strict';
 
-const CACHE_NAME = 'telecom-legends-shell-v9';
+const CACHE_NAME = 'telecom-legends-shell-v10';
 const APP_FILES = [
   './Telecom_Legends_v9.html',
   './manifest.webmanifest',
   './telecom-legends-icon.svg',
   './apple-touch-icon.png'
 ];
+const LEGACY_APP_PATH = new URL('./Telecom_Legends_v7.html', self.location).pathname;
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -40,6 +41,8 @@ self.addEventListener('fetch', event => {
           if (response.ok) {
             const copy = response.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          } else if (response.status === 404 && url.pathname === LEGACY_APP_PATH) {
+            return caches.match(APP_FILES[0]).then(cached => cached || response);
           }
           return response;
         })
