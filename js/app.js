@@ -707,7 +707,8 @@ function answer(k){if(!M||M.ans!==null)return;M.ans=k;M.comboBefore=M.combo;cons
  const fast=good&&!M.noTimer&&M.mode!=='blitz'&&M.t/M.tMax>0.66;
  if(good){st.c++;st.l=1;M.correct++;S.totC=(S.totC||0)+1;M.combo++;M.maxCombo=Math.max(M.maxCombo,M.combo);S.bestCombo=Math.max(S.bestCombo||0,M.combo);
   const MD=M.mod?MODS[M.mod]:{},mult=(M.dbl>0?2:1)*(fast?1.5:1)*(MD.p||1)*(M.gold?3:1),pts=Math.round(100*DIFS[q.dif].m*(1+0.1*Math.min(M.combo-1,10))*(M.combo>=3?2:1)*mult);const wk=q.asig===weekAsig()?2:1,fv=M.fever>0;const pts2=fv?pts*2:pts;M.points+=pts2-pts;M.points+=pts;M.coinsAcc+=10*DIFS[q.dif].m*(M.dbl>0?2:1)*(MD.c||1)*(M.gold?3:1)*wk*(fv?2:1);gainCardXP(q);if(M.combo===8&&!fv){M.fever=3;S.fevers=(S.fevers||0)+1;setTimeout(()=>{floatTxt('🔥 ¡MODO FIEBRE! 🔥','#fb923c');sfx('icon');vib([50,30,50,30,120]);const v=$('#view');if(v)v.classList.add('feverv')},300)}else if(fv){M.fever--;if(!M.fever){const v=$('#view');if(v)v.classList.remove('feverv')}}if(M.gold){S.goldC=(S.goldC||0)+1}speedChest(60);if(M.combo===5||M.combo===10){M.shields++;floatTxt('🛡️ +1 escudo de racha','#7dd3fc',700)}
-  sfx('success',M.combo);floatTxt(`+${pts}${fast?' ⚡ ¡Rápido!':''}`);if([5,10,15,20].includes(M.combo))floatTxt(`🔥 ¡COMBO x${M.combo}!`,'#fb923c',350);
+  sfx('success',M.combo);vib(10);floatTxt(`+${pts}${fast?' ⚡ ¡Rápido!':''}`);if([5,10,15,20].includes(M.combo))floatTxt(`🔥 ¡COMBO x${M.combo}!`,'#fb923c',350);
+  if(M.combo===5&&(M.mode==='quick'||M.mode==='blitz'||M.mode==='alerta'))ncProg('streak5',1);
   prog('correct',1);trackGood(q);if(q.dif>=3)prog('hard',1);if(fast)prog('fast',1);prog('combo',M.combo);if(M.mode==='blitz')M.gt=Math.min(M.gtMax+30,M.gt+M.bplus)}
  else{st.w++;st.l=0;trackBad(q);if(M.shields>0){M.shields--;saved=true;sfx('shield');floatTxt('🛡️ ¡Salvado!','#7dd3fc')}
   else{const trap=M.mod&&MODS[M.mod].trap;M.wrong++;M.combo=0;if(M.fever){M.fever=0;const v=$('#view');if(v)v.classList.remove('feverv')}sfx('error');vib([60,40,60]);shake();if(trap&&M.mode!=='surv'){M.points=Math.max(0,M.points-150);floatTxt('🪤 −150 puntos','#ef4444',300)}if(M.mode==='surv'){M.lives-=trap?2:1;floatTxt(trap?'💔💔 ¡Trampa!':'💔','#ef4444')}if(M.mode==='blitz'){M.gt=Math.max(0,M.gt-5);floatTxt('−5 s','#ef4444')}}}
@@ -1045,7 +1046,7 @@ function closeModal(){const m=$('#modal');m.classList.add('hidden');m.innerHTML=
 let TT;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(TT);TT=setTimeout(()=>e.classList.remove('show'),2600)}
 let AC=null;function ac(){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;if(!AC)AC=new C();if(AC.state==='suspended')AC.resume().catch(e=>console.warn('No se pudo reanudar el audio:',e));return AC}
 function tone(f,d,t='sine',del=0,vol=.15){const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain(),s=a.currentTime+del;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(vol,s+.01);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g).connect(a.destination);o.start(s);o.stop(s+d+.03)}
-const SFX={ok:()=>{tone(660,.12,'triangle');tone(990,.18,'triangle',.09)},bad:()=>tone(170,.28,'sawtooth',0,.07),flip:()=>tone(520,.08,'square',0,.05),gold:()=>[523,784,1047].forEach((f,i)=>tone(f,.22,'triangle',i*.08)),icon:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.4,'triangle',i*.09,.17)),power:()=>{tone(400,.1,'square',0,.05);tone(800,.15,'square',.08,.05)},shield:()=>tone(300,.22,'triangle'),lvl:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',i*.1))};
+const SFX={ok:(combo=0)=>{const f=660+Math.min(combo,14)*16;tone(f,.1,'triangle');tone(f+330,.16,'triangle',.09)},bad:()=>tone(170,.28,'sawtooth',0,.07),flip:()=>tone(520,.08,'square',0,.05),gold:()=>[523,784,1047].forEach((f,i)=>tone(f,.22,'triangle',i*.08)),icon:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.4,'triangle',i*.09,.17)),power:()=>{tone(400,.1,'square',0,.05);tone(800,.15,'square',.08,.05)},shield:()=>tone(300,.22,'triangle'),lvl:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',i*.1))};
 SFX.click=()=>tone(800,.015,'sine',0,.045);
 SFX.success=combo=>{const n=Math.min(10,Math.max(0,Number(combo)||0)),base=600+n*34;tone(base,.11,'triangle',0,.08);tone(base+220,.14,'sine',.075,.07)};
 SFX.error=()=>{tone(220,.15,'sawtooth',0,.05);tone(145,.2,'triangle',.1,.07)};
@@ -4897,7 +4898,7 @@ function ncBrief(id){const N=S.nc,run=N.run;if(!run)return;const n=ncNode(run,id
  ${tema?`<div class="ncb-row intel"><i>🤖</i><div><small>COPILOTO · tema foco: ${esc(tema)}</small>${I?esc(I.tip):'No tengo resumen de este tema en tus apuntes.'}${I&&I.f&&ncMod('tel')?`<div class="ncf">${fmt(I.f)}</div>`:I&&I.f?'<div class="mut sm">🔒 Fórmula clave: mejora «Telemetría avanzada» en la Base.</div>':''}</div></div>`:''}
  ${inc&&L.k==='aud'?`<div class="ncb-row"><i>🎫</i><div><small>INCIDENCIAS</small>${inc} abiertas en este sector: entran primero y pagan ×${ncMod('rec')?4:3}.</div></div>`:''}
  <div class="ncb-rack"><small>RACK ACTIVO</small>${ncRackHTML(true)}</div>
- <div class="row" style="margin-top:12px"><button class="btn sec" onclick="closeModal()">Volver</button><button class="btn green" onclick="closeModal();ncLaunch('${id}')">🚀 Desplegar</button></div></div>`);
+ <div class="row" style="margin-top:12px"><button class="btn sec" onclick="closeModal()">Volver</button><button class="btn green ncdep" onclick="closeModal();ncLaunch('${id}')">🚀 DESPLEGAR EN MISIÓN</button></div></div>`);
  if(I&&I.f&&ncMod('tel'))math($('#modal'))}
 
 function ncRackHTML(small){const r=S.nc.rack;return `<div class="ncrack${small?' sm':''}">${[0,1,2].map(i=>{const id=r[i],A=id&&ncAbilOf(id);if(!A)return `<button class="ncslot empty" onclick="ncRackPick(${i})">＋<small>Ranura ${i+1}</small></button>`;const Ab=NC_ABIL[A.k];return `<button class="ncslot r-${A.c.r}" onclick="ncRackPick(${i})"><span>${A.c.e}</span><b>${esc(A.c.n)}</b><small>${Ab.e} ${Ab.s}${A.plus?'+':''} · ${A.cost} ⚡</small></button>`}).join('')}</div>`}
@@ -4925,7 +4926,8 @@ function ncLaunch(id,rep){const N=S.nc;let run=N.run,n,L,a,tier;
  N.mid=(N.mid||0)+1;
  const nc={kind:L.k,node:n.id,b:n.b,mod:n.mod,rep:!!rep,a,tier,mid:N.mid,bw:Math.min(NC_BWMAX,1+ncMod('cond')+(n.mod==='maint'?2:0)),snr:18,buf:0,bhp:0,bmax:0,amp:0,crAcc:0,frAcc:0,incClosed:0,incNew:0,used:{},lastOk:true,bossShield:false,lat:[],integ0:run?run.integ:null,labs:0,labWins:0,phase:1,said:{}};
  if(L.k==='boss'){nc.bmax=Math.round(100*(1+.15*(tier-1)));nc.bhp=nc.bmax}
- startMatch({mode:'nc',asig:a,qs,nc,bonus:b,shields:ncMod('fw')+(n.mod==='clean'?1:0),noTimer:false});
+  startMatch({mode:'nc',asig:a,qs,nc,bonus:b,shields:ncMod('fw')+(n.mod==='clean'?1:0),noTimer:false});
+  vib([30,50]);
  setTimeout(()=>ncSay(L.k==='boss'?`${NC_BOSS[a].n}: ${NC_BOSS[a].d}`:L.goal,4200),400)}
 
 /* ---------- HUD de misión ---------- */
@@ -5021,7 +5023,7 @@ function ncAbort(){if(!M||!M.nc)return;M.nc.abort=true;M.over=true;M.ended=true;
  S.nc.cr+=cr;S.nc.fr+=fr;S.nc.stats.missions++;if(ok)S.nc.stats.clears++;
  let status=ok?'ok':'ko',banner='';
  if(N.rep){banner=N.incClosed?'🎫 TICKETS CERRADOS':'REPARACIÓN SIN CIERRES'}
- else if(run){run.res[N.node]=status;run.path.push(N.node);run.cr+=cr;run.fr+=fr;
+  else if(run){if(ok)ncProg('nodes',1);run.res[N.node]=status;run.path.push(N.node);run.cr+=cr;run.fr+=fr;
   if(N.collapse||N.abort){if(N.abort)run.integ=Math.max(0,run.integ-15);}
   else if(ok)run.integ=Math.min(run.max,run.integ+12);else run.integ=Math.max(0,run.integ-15);
   if(run.integ<=0){status='collapse';banner='☢️ APAGÓN DEL SECTOR';S.nc.stats.collapses++;S.nc.sec[run.a].best=Math.max(S.nc.sec[run.a].best,run.layer);S.nc.run=null}
@@ -5035,12 +5037,14 @@ function ncAbort(){if(!M||!M.nc)return;M.nc.abort=true;M.over=true;M.ended=true;
  if(ok){sfx(N.kind==='boss'?'icon':'gold');confetti(N.kind==='boss'?120:50)}else sfx('error')}
 function ncNextNudge(){const N=S.nc;const opts=Object.entries(NC_MODULES).filter(([k,m])=>ncMod(k)<m.max).map(([k,m])=>({n:`${m.e} ${m.n}`,c:m.cost[ncMod(k)]})).sort((a,b)=>a.c-b.c);const o=opts[0];if(!o)return '';return N.cr>=o.c?`<div class="ncnudge ok">🏗️ ¡Ya puedes mejorar ${esc(o.n)} en la Base!</div>`:`<div class="ncnudge">🏗️ Te faltan <b>${o.c-N.cr} 🔬</b> para ${esc(o.n)}</div>`}
 VIEWS.ncres=function(){const R=NC_LAST;if(!R){route='home';return VIEWS.home()}const run=S.nc.run;
+if(R.kind==='boss'&&R.ok&&!S.nc.capBoss){modal(`<div class="ncbrief"><div class="ncb-h"><span>🏆</span><div><small>JEFE DE SECTOR DERROTADO</small><b>Cápsula de Telemetría</b></div></div><div class="mut sm">Elige una recompensa extra</div><div class="cap"><button class="cap c-cr" onclick="ncCap(0)"><b>+150 🔬</b><small>Créditos I+D</small></button><button class="cap c-fr" onclick="ncCap(1)"><b>+10 🧩</b><small>Fragmentos de Esquema</small></button><button class="cap c-up" onclick="ncCap(2)"><b>+1 nivel gratis</b><small>Carta del Rack</small></button></div></div>`,true);return}
  V.innerHTML=`<div class="ncres ${R.status}"><div class="ncres-b">${R.banner}</div><div class="mut">${ASIG[R.a]?ASIG[R.a].icon+' '+esc(ASIG[R.a].name):''} · ${R.correct}/${R.n} aciertos · racha máx. ${R.maxCombo}</div>
  <div class="ncloot"><div><small>CRÉDITOS I+D</small><b class="ncount" data-to="${R.cr}">0</b><span>🔬</span></div><div><small>FRAGMENTOS</small><b class="ncount" data-to="${R.fr}">0</b><span>🧩</span></div>${R.integ!=null?`<div><small>INTEGRIDAD</small><b>${Math.round(R.integ)}%</b><span>🛡️</span></div>`:''}</div>
  ${R.lines.map(l=>`<div class="ncline">${esc(l)}</div>`).join('')}</div>${ncNextNudge()}
  ${run?`<button class="btn big green" onclick="go('home')">🗺️ SIGUIENTE NODO</button>`:`<button class="btn big" onclick="go('home')">🛰️ VOLVER AL MANDO</button>`}
  ${ncOpenInc().length?`<button class="btn sec" style="margin-top:10px" onclick="go('notebook')">📓 Cuaderno · ${ncOpenInc().length} incidencias abiertas</button>`:''}`;
- V.querySelectorAll('.ncount').forEach(el=>{const to=+el.dataset.to,t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/900);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)})};
+  V.querySelectorAll('.ncount').forEach(el=>{const to=+el.dataset.to,t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/900);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)})};
+function ncCap(i){if(!NC_LAST)return closeModal();const R=NC_LAST;if(i===0){R.cr+=150;S.nc.cr+=150;R.lines.push('🎁 Cápsula: +150 🔬 Créditos I+D')}else if(i===1){R.fr+=10;S.nc.fr+=10;R.lines.push('🎁 Cápsula: +10 🧩 Fragmentos de Esquema')}else if(i===2){const id=S.nc.rack&&S.nc.rack[0];if(id&&S.cards[id]){const mx=maxL(S.cards[id]);if((S.cards[id].l||1)<mx){S.cards[id].l=(S.cards[id].l||1)+1;R.lines.push(`🎁 Cápsula: ${esc(CARD[id].n)} sube a Nv ${S.cards[id].l}`)}else R.lines.push('🎁 Cápsula: carta del rack ya al máximo')}else R.lines.push('🎁 Cápsula: no hay carta de rack disponible')}S.nc.capBoss=1;save();closeModal();go('ncres')}
 
 /* ---------- ticket cerrado ---------- */
 function ncTicket(q){const d=document.createElement('div');d.className='ncticket';d.innerHTML=`<div><span>🎫</span><b>TICKET CERRADO</b><small>Sistema reparado · ${esc(q.tema||'')}</small></div>`;document.body.appendChild(d);sfx('gold');vib([30,40,80]);setTimeout(()=>d.remove(),1700)}
@@ -5100,18 +5104,36 @@ return ()=>{}}
 /* ---------- Centro de Mando (pantalla principal) ---------- */
 const NC_ARCADE_HOME=VIEWS.home;
 VIEWS.arcade=function(){NC_ARCADE_HOME()};
-VIEWS.home=function(){const N=S.nc,run=N.run,daily=ncDaily(),inc=ncOpenInc().length;
- const total=ASIGS.reduce((s,a)=>s+N.sec[a.id].tier-1,0);
- if(run){const A=ASIG[run.a],L=NC_LAYERS[run.layer];V.innerHTML=`<div class="ncpanel"><div class="rowb"><div><small class="nclbl">SECTOR DESPLEGADO</small><h2 style="margin:0">${A.icon} ${esc(A.name)}</h2><small class="mut">Nivel ${run.tier} · paso ${run.layer+1}/5 · ${L.e} ${L.n}</small></div><button class="lnk" onclick="ncAbandon()">Retirarse</button></div>
+VIEWS.home=function(){const N=S.nc,run=N.run,daily=ncDaily(),inc=ncOpenInc().length;const L=league(S.trophies);const ctr=ncContracts();const doneN=ctr.list.filter(x=>x.p>=x.g).length;const recR=S.nc.rec=(S.nc.rec||{});const alertaRec=recR['RST1']||0;
+if(run){const A=ASIG[run.a],L2=NC_LAYERS[run.layer];V.innerHTML=`<div class="ncpanel"><div class="rowb"><div><small class="nclbl">SECTOR DESPLEGADO</small><h2 style="margin:0">${A.icon} ${esc(A.name)}</h2><small class="mut">Nivel ${run.tier} · paso ${run.layer+1}/5 · ${L2.e} ${L2.n}</small></div><button class="lnk" onclick="ncAbandon()">Retirarse</button></div>
   <div class="ncinteg"><small>INTEGRIDAD DEL SISTEMA</small><div class="nchp me"><i style="width:${run.integ/run.max*100}%"></i><span>${Math.round(run.integ)} / ${run.max}</span></div></div>
+  <button class="ncho" onclick="ncHero()">▶ ENTRAR AL SIGUIENTE NODO · JUGAR</button>
   <div class="ncmapw">${ncMapSVG(run)}</div><div class="mut sm" style="text-align:center">Toca un nodo brillante para ver su informe. 📘 Teoría: ruta segura · 🧮 Cálculo: más daño, más botín y cofre 🎁</div></div>
   <div class="ncpanel"><div class="rowb"><b>🧰 Rack activo</b><small class="mut">toca una ranura para cambiarla</small></div>${ncRackHTML()}</div>`;return}
- V.innerHTML=`<div class="nchero"><div class="ncscan"></div><small class="nclbl">TELECOM LEGENDS</small><h2>🛰️ Centro de Mando</h2><div class="ncres3"><span>🔬 <b>${N.cr}</b><small>Créditos I+D</small></span><span>🧩 <b>${N.fr}</b><small>Fragmentos</small></span><span>🎫 <b>${inc}</b><small>Incidencias</small></span><span>📡 <b>${N.sync}</b><small>Sincronía</small></span></div><div class="ncrank">Mando global: <b>${total}</b> niveles de sector conquistados</div></div>
- <div class="ncdaily" onclick="ncDeploy('${daily}')"><span>${ASIG[daily].icon}</span><div><small>ORDEN DEL DÍA</small><b>${esc(ASIG[daily].name)}</b><small>Créditos ×1,25 hoy en este sector</small></div><i>›</i></div>
- ${inc?`<button class="menu ncincb" onclick="go('notebook')"><span>🎫</span><div><b>${inc} incidencias abiertas</b><small>Ciérralas y cobra ×${ncMod('rec')?4:3}</small></div><i>›</i></button>`:''}
- <div class="ncpanel"><div class="rowb"><b>🧰 Rack activo</b><small class="mut">3 habilidades para tus misiones</small></div>${ncRackHTML()}</div>
- <h3 style="margin-top:14px">Sectores de infraestructura</h3><div class="ncsecs">${ASIGS.map(a=>{const s=N.sec[a.id],ninc=ncOpenInc(a.id).length;return `<button class="ncsec" style="--c:${a.color}" onclick="ncDeploy('${a.id}')"><span class="nce">${a.icon}</span><b>${esc(a.name)}</b><small>${(NC_BOSS[a.id]||{}).e||''} ${esc((NC_BOSS[a.id]||{}).n||'')}</small><span class="ncstars">${'★'.repeat(s.tier)}${'☆'.repeat(5-s.tier)}</span><small>${s.clears} asegurado${s.clears===1?'':'s'}${ninc?` · 🎫 ${ninc}`:''}${a.id===daily?' · ⭐ hoy':''}</small></button>`}).join('')}</div>
- <button class="menu" style="margin-top:12px" onclick="go('arcade')"><span>🕹️</span><div><b>Arcade clásico</b><small>Mundos, duelos, sobres, expedición roguelike y simulacros</small></div><i>›</i></button>`};
+V.innerHTML=`<div class="nchero"><div class="ncscan"></div><small class="nclbl">TELECOM LEGENDS v18</small><h2>🛰️ Centro de Mando</h2><div class="hmtel"><div class="teli"><b>🎖️ ${L.e}</b><div class="mut">${L.n}</div></div><div class="teli"><b>🔥 ${streakNow()}</b><div class="mut">racha días</div></div><div class="teli"><b>🔬 ${N.cr}</b><div class="mut">créditos I+D</div></div><div class="teli"><b>🧩 ${N.fr}</b><div class="mut">fragmentos</div></div><div class="teli snd" onclick="toggleSound()">${S.sound?'🔊':'🔇'}</div></div></div>
+<div class="hmsct"><div class="rowb"><div><small class="nclbl">CENTRO DE MANDO</small><b>Despliegue de sectores</b></div><span class="hmbadge${run?' pulse':''}">${run?'SECTOR DESPLEGADO · continua':'Listo para desplegar'}</span></div><div class="mut sm">${run?`${ASIG[run.a].icon} ${esc(ASIG[run.a].name)} Nv ${run.tier} · ${Math.round(run.integ)}% integridad`:'Despliega un sector y lanza misiones de telemetría'}</div><button class="btn48 ncho" onclick="${run?'ncHero()':`ncDeploy('${daily}')`}">${run?'▶ ENTRAR AL SIGUIENTE NODO · JUGAR':'🛰️ DESPLEGAR SECTOR DEL DÍA'}</button></div>
+<div class="hmcontr"><div class="rowb"><b>📋 Guardias Diarias NOC</b><span class="mut">${doneN}/3 completadas${ctr.claimed?' · botín reclamado':''}</span></div>${ctr.list.map(c=>`<div class="hmc"><div><b style="font-size:12px">${esc(c.t)}</b><small class="mut">${c.p}/${c.g}</small></div><div class="hmbar"><em style="width:${c.p/c.g*100}%"></em></div><i>${c.p>=c.g?'✅':'›'}</i></div>`).join('')}${ctr.list.every(x=>x.p>=x.g)&&!ctr.claimed?`<button class="btn48 gold" onclick="ncClaimContracts()">🎁 RECLAMAR BOTÍN</button>`:ctr.claimed?`<div class="mut sm">🎁 Botín reclamado · vuelve mañana</div>`:`<div class="mut sm">Supera las 3 guardias para reclamar el botín</div>`}</div>
+<h3 style="margin:14px 0 8px">Modos secundarios</h3><div class="hmgrid">
+<button class="btn hm" onclick="go('alerta','RST1')" style="--c:#ef4444"><span>⚠️</span><div><b>Alerta Roja (60s)</b><small>${ASIG['RST1'].name} · récord ${alertaRec} aciertos</small></div></button>
+<button class="btn hm" onclick="go('quick')" style="--c:#0891b2"><span>📚</span><div><b>Entrenamiento Libre</b><small>Práctica rápida de preguntas</small></div></button>
+<button class="btn hm" onclick="go('base')" style="--c:#7c5cff"><span>🏗️</span><div><b>Taller I+D</b><small>Módulos, cartas y fabricación</small></div></button>
+<button class="btn hm" onclick="go('album')" style="--c:#ec4899"><span>🃏</span><div><b>Álbum / Historial</b><small>Colección y récords</small></div></button>
+</div>`};
+/* ----- Guardias Diarias NOC (3 contratos rotativos por fecha) ----- */
+function ncContracts(){const N=S.nc;const d=today();if(!N.contracts||N.contracts.d!==d){const pool=[{k:'nodes',t:'Supera 2 nodos en Centro de Mando',g:2,rw:{cr:200,fr:5}},{k:'optimo',t:'Alcanza Estado Óptimo ×1,5',g:1,rw:{cr:250,fr:0}},{k:'streak5',t:'Acierta 5 seguidas en Entrenamiento o Alerta Roja',g:5,rw:{cr:300,fr:10}}];N.contracts={d,list:shuffle(pool).map(x=>({...x,p:0})),claimed:0};save()}return N.contracts}
+function ncProg(k,v){const N=S.nc;if(!N.contracts||N.contracts.d!==today())ncContracts();const c=N.contracts;if(!c||c.claimed)return;const x=c.list.find(y=>y.k===k);if(x&&x.p<x.g){x.p=Math.min(x.g,x.p+v);save()}}
+function ncClaimContracts(){const c=S.nc.contracts;if(!c||c.claimed||!c.list.every(x=>x.p>=x.g))return;let cr=0,fr=0;c.list.forEach(x=>{cr+=x.rw.cr;fr+=x.rw.fr});S.nc.cr+=cr;S.nc.fr+=fr;c.claimed=1;save();sfx('gold');vib([40,30,60]);toast(`🎁 Botín guardias: +${cr} 🔬 +${fr} 🧩`);render()}
+function ncHero(){const N=S.nc;if(!N.run){toast('No hay ningún sector desplegado');return}const av=ncAvail(N.run);if(!av.length){toast('No hay nodos disponibles en este sector');return}ncBrief(av[0]);vib([20,40])}
+
+/* ---------- Modo Alerta Roja (60s, contrarreloj por asignatura) ---------- */
+let ALRT_TMR=null;
+function alertaStart(asig){M=Object.assign({i:0,correct:0,wrong:0,combo:0,maxCombo:0,res:[],over:false,seen:new Set(),ans:null},{mode:'alerta',asig,gt:60,gtMax:60,started:Date.now()});alertaNextQ()}
+function alertaNextQ(){if(M.over)return;const q=pickQs(q=>q.asig===M.asig,1,[1,2,3,4]);if(!q.length){M.over=true;alertaOver();return}M.qs=q;M.i=0;M.ans=null;}
+function alertaAnswer(k){if(!M||M.mode!=='alerta'||M.ans!==null)return;const q=M.qs[M.i];if(!q)return;const good=k===q.ok;M.ans=k;if(good){M.correct++;M.combo++;M.maxCombo=Math.max(M.maxCombo,M.combo);M.gt=Math.min(60,M.gt+4);sfx('ok',M.combo);vib(10);floatTxt('+4 s','#22c55e')}else{M.wrong++;M.combo=0;M.gt=Math.max(0,M.gt-3);sfx('bad');vib(40);floatTxt('−3 s','#ef4444')}if(M.combo===5)ncProg('streak5',1);setTimeout(()=>{if(M&&!M.over)alertaNextQ()},650)}
+function alertaTick(){if(!M||M.mode!=='alerta')return;M.gt-=0.1;const b=$('#alerta-time');if(b)b.textContent=Math.ceil(Math.max(0,M.gt));if(M.gt<=0){M.over=true;if(ALRT_TMR){clearInterval(ALRT_TMR);ALRT_TMR=null}}if(M.over)alertaOver()}
+function alertaOver(){const rec=S.nc.rec=(S.nc.rec||{});const cur=rec[M.asig]||0;const beat=M.correct>cur;if(beat)rec[M.asig]=M.correct;save();modal(`<div class="alerta"><div class="alerta-h"><span>⚠️</span><div>ALERTA ROJA · ${ASIG[M.asig].name}<div class="mut">${beat?'¡NUEVO RÉCORD PERSONAL!':'Récord personal: '+cur+' aciertos'}</div></div><div class="alerta-time">${Math.ceil(Math.max(0,M.gt))}s</div></div><div class="mut">${M.correct} aciertos · racha máx. x${M.maxCombo}</div><div class="alerta-st"><div><b>${M.correct}</b><small>Aciertos</small></div><div><b>${M.wrong}</b><small>Fallos</small></div><div><b>x${M.maxCombo}</b><small>Mejor combo</small></div></div><button class="btn48" onclick="closeModal();go('home')">Volver al Mando</button></div>`,true)}
+VIEWS.alerta=function(){const asig=ARG||'RST1';if(!M||M.mode!=='alerta'||M.asig!==asig)alertaStart(asig);if(ALRT_TMR){clearInterval(ALRT_TMR);ALRT_TMR=null}if(M.over){alertaOver();return}ALRT_TMR=setInterval(alertaTick,100);const q=M.qs[M.i]||{};V.innerHTML=`<div class="alerta"><div class="alerta-h"><span>⚠️</span><div>ALERTA ROJA · ${esc(ASIG[asig].name)}<div class="mut">+4 s por acierto · −3 s por fallo · racha ×1 → ×4</div></div><div class="alerta-time" id="alerta-time">60</div></div><div class="alerta-q">${esc(q.q||'Cargando…')}</div><div class="alerta-st"><div><b>${M.correct}</b><small>Aciertos</small></div><div><b>${M.wrong}</b><small>Fallos</small></div><div><b>x${M.combo}</b><small>Combo</small></div></div>${q.ops?q.ops.map((o,i)=>`<button class="btn48" onclick="alertaAnswer(${i})">${esc(o)}</button>`).join(''):''}<div class="alerta-combo">Racha x${M.combo}${M.combo>=4?' · MÁXIMO':' '}</div></div>`;}
+
 function ncDeploy(a){if(S.nc.run){toast('Ya tienes un sector desplegado');return}if(!S.nc.rack.length){toast('Equipa al menos una carta en el rack');return}ncNewRun(a);sfx('power');render()}
 function ncAbandon(){modal(`<h3>¿Retirarte del sector?</h3><div class="mut">Conservas lo ganado, pero el mapa se pierde y el jefe no cae.</div><div class="row" style="margin-top:14px"><button class="btn sec" onclick="closeModal()">Seguir</button><button class="btn" onclick="S.nc.run=null;save();closeModal();render()">Retirarse</button></div>`)}
 
@@ -5338,7 +5360,7 @@ NC_MODULES.cache=NC_MODULES.tel;
 /* --- Estado Óptimo (Overclock Táctico): 3 aciertos seguidos --- */
 const TL_v16_ncAfter=ncAfter;
 ncAfter=function(k){const N=M&&M.nc;const before=N?N.crAcc:0;TL_v16_ncAfter(k);if(!M||!M.nc)return;const N2=M.nc,r=M.res[M.res.length-1];
- if(r&&r.ok){if(M.combo>=3&&!N2.optimo){N2.optimo=true;N2.bw=Math.min(NC_BWMAX,N2.bw+1);floatTxt('⚡ ESTADO ÓPTIMO ×1,5','#fde047',320);try{ncSay('¡Estado Óptimo! +1 ⚡ y puntos ×1,5 mientras no falles.',3000,3)}catch(e){}}
+  if(r&&r.ok){if(M.combo>=3&&!N2.optimo){N2.optimo=true;ncProg('optimo',1);N2.bw=Math.min(NC_BWMAX,N2.bw+1);floatTxt('⚡ ESTADO ÓPTIMO ×1,5','#fde047',320);try{ncSay('¡Estado Óptimo! +1 ⚡ y puntos ×1,5 mientras no falles.',3000,3)}catch(e){}}
   if(N2.optimo){const delta=N2.crAcc-before,extra=Math.round(delta*0.5);if(extra>0){N2.crAcc+=extra;floatTxt('+'+extra+' 🔬 ×1,5','#fde047',360)}}}
  else if(r&&!r.saved){N2.optimo=false}
  save();try{ncRefreshHUD()}catch(e){}};
